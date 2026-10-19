@@ -1,0 +1,21 @@
+DirectoryIndex index.html index.php
+ErrorDocument 404 /404.html
+
+# Área do cliente: o painel só abre por painel.php (que confere o login).
+# O arquivo .html do painel e os arquivos internos de autenticação não podem ser abertos direto.
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteRule ^painel-cliente\.html$ - [F,L]
+RewriteRule ^assets/php/(users|auth)\.php$ - [F,L]
+
+# Blog: /blog e /blog/ (pasta sem index) redirecionam para a página do blog.
+RewriteRule ^blog/?$ /blog.html [R=301,L]
+</IfModule>
+
+# Landing page de provedores: o config.js pode ser editado direto no servidor,
+# então o navegador sempre confere se há versão nova (sem cache de 7 dias).
+<IfModule mod_headers.c>
+<FilesMatch "^config\.js$">
+Header set Cache-Control "no-cache, must-revalidate"
+</FilesMatch>
+</IfModule>

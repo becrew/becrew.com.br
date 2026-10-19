@@ -1,0 +1,8 @@
+# Ficam só no servidor (e no repositório privado becrew.com.br-privado)
+assets/php/users.php
+loopy/
+
+# Backups e lixo de sistema
+*.bak-*
+.DS_Store
+Thumbs.db
