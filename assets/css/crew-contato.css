@@ -1,0 +1,95 @@
+/* Crew - contato.html: service chips, budget select, long email wrap. Grays only. */
+
+.tft-page-contact .crew-break { overflow-wrap: anywhere; }
+
+/* Static label (legend) matching the floated .tft-contact-label */
+.tft-page-contact .crew-field-label {
+    display: block;
+    padding: 0;
+    margin-bottom: 1.25rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--tft-lime);
+}
+
+.tft-page-contact .crew-chips { border: 0; margin: 0; padding: 0; min-width: 0; }
+.tft-page-contact .crew-chips__list { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.tft-page-contact .crew-chip { position: relative; cursor: pointer; }
+.tft-page-contact .crew-chip input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    pointer-events: none;
+}
+.tft-page-contact .crew-chip span {
+    display: inline-block;
+    padding: 0.75rem 1.25rem;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.6);
+    transition: background-color .3s ease, color .3s ease, border-color .3s ease;
+}
+.tft-page-contact .crew-chip:hover span { border-color: rgba(255, 255, 255, 0.4); color: #fff; }
+.tft-page-contact .crew-chip input:checked + span { background: #fff; border-color: #fff; color: #0a0a0a; }
+.tft-page-contact .crew-chip input:focus-visible + span { outline: 2px solid #fff; outline-offset: 3px; }
+
+/* Budget select: keeps the underline style of the other fields */
+.tft-page-contact .crew-select select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 2.5rem;
+    cursor: pointer;
+}
+.tft-page-contact .crew-select select:invalid { color: rgba(255, 255, 255, 0.35) !important; }
+.tft-page-contact .crew-select option { background: #161616; color: #fff; }
+.tft-page-contact .crew-select__icon {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, 0.5);
+    pointer-events: none;
+}
+
+/* Location spotlight: Google Maps embed as a dark, non-interactive background.
+   The frame is oversized and shifted so the pin sits beside the title, not under it. */
+.crew-map {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    background: #111;
+}
+.crew-map__frame {
+    position: absolute;
+    border: 0;
+    pointer-events: none;
+    /* Dark monochrome look. (invert() rendered the cross-origin frame black in some browsers.) */
+    filter: grayscale(1) brightness(.55) contrast(1.25);
+    /* Own compositing layer: some browsers skipped painting the cross-origin frame inside the animated card. */
+    transform: translateZ(0);
+    will-change: transform;
+    /* mobile: pin in the lower part, below the title */
+    width: 100%;
+    height: 180%;
+    left: 0;
+    top: -12%;
+}
+@media (min-width: 768px) {
+    .crew-map__frame {
+        /* desktop: pin on the right third */
+        width: 200%;
+        height: 130%;
+        left: -25%;
+        top: -15%;
+    }
+}
+/* Keep the dark veil over the map constant (the template lightened it on hover, hurting legibility) */
+.crew-map + .absolute.inset-0 {
+    background: radial-gradient(ellipse at center, rgba(10,10,10,.6) 0%, rgba(10,10,10,.35) 70%) !important;
+    opacity: 1 !important;
+}

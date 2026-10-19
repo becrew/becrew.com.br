@@ -1,0 +1,440 @@
+/* ==========================================================================
+   CREW - Brand layer on top of the Realiz template (main.css)
+   Monochrome identity: black, white and grays.
+   ========================================================================== */
+
+:root {
+    --crew-black: #0a0a0a;
+    --crew-ink: #161616;
+    --crew-gray-900: #1f1f1f;
+    --crew-gray-700: #3d3d3d;
+    --crew-gray-500: #7a7a7a;
+    --crew-gray-300: #bdbdbd;
+    --crew-gray-100: #ececec;
+    --crew-white: #ffffff;
+}
+
+/* --------------------------------------------------------------------------
+   Language switch (PT / EN)
+   -------------------------------------------------------------------------- */
+.crew-lang {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 3px;
+    border-radius: 999px;
+    border: 1px solid currentColor;
+    font-family: var(--font-body);
+}
+.crew-lang__btn {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: 700 10px/1 var(--font-body);
+    letter-spacing: .12em;
+    padding: 7px 9px;
+    border-radius: 999px;
+    cursor: pointer;
+    opacity: .5;
+    transition: opacity .25s ease, background-color .25s ease, color .25s ease;
+}
+.crew-lang__btn:hover { opacity: 1; }
+.crew-lang__btn.is-active { opacity: 1; background: currentColor; }
+.crew-lang__btn.is-active { color: var(--crew-white); }
+.crew-lang__sep { display: none; }
+
+/* sidebar (white): ink pill */
+.crew-lang--sidebar { color: var(--crew-ink); border-color: rgba(22,22,22,.15); margin-top: 1.5rem; }
+.crew-lang--sidebar .crew-lang__btn.is-active { background: var(--crew-ink); color: var(--crew-white); }
+.crew-lang--sidebar .crew-lang__btn { padding: 7px 8px; }
+
+/* mobile header (white) */
+.crew-lang--mobile { color: var(--crew-ink); border-color: rgba(22,22,22,.15); margin-left: auto; margin-right: 12px; }
+.crew-lang--mobile .crew-lang__btn.is-active { background: var(--crew-ink); color: var(--crew-white); }
+
+/* dark surfaces (menu, footer) */
+.crew-lang--menu,
+.crew-lang--footer { color: var(--crew-white); border-color: rgba(255,255,255,.15); }
+.crew-lang--menu .crew-lang__btn.is-active,
+.crew-lang--footer .crew-lang__btn.is-active { background: var(--crew-white); color: var(--crew-black); }
+
+/* --------------------------------------------------------------------------
+   Menu panel
+   -------------------------------------------------------------------------- */
+/* The closed panel's shadow leaked onto light sections; only cast it when open */
+#menu-panel:not(.menu-open) { box-shadow: none !important; }
+.crew-menu-row { position: relative; }
+.crew-menu-link::after { content: ""; position: absolute; inset: 0; }
+#menu-panel .crew-menu-link.is-current-page span[data-i18n] { color: var(--crew-white); }
+#menu-panel .crew-menu-link.is-current-page span[data-i18n]::before {
+    content: "";
+    display: inline-block;
+    width: 6px; height: 6px;
+    margin-right: 12px;
+    border-radius: 50%;
+    background: var(--crew-white);
+    vertical-align: middle;
+}
+.crew-menu-foot {
+    margin-top: auto;
+    padding-top: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+#menu-panel { overflow-x: hidden; }
+@media (max-width: 767px) {
+    .crew-menu-foot { flex-direction: column; align-items: flex-start; }
+}
+.crew-menu-mail {
+    font: 500 13px/1.4 var(--font-body);
+    color: rgba(255,255,255,.5);
+    transition: color .25s ease;
+}
+.crew-menu-mail:hover { color: var(--crew-white); }
+
+/* --------------------------------------------------------------------------
+   Sidebar brand strip: black with white type (was lime)
+   -------------------------------------------------------------------------- */
+.rlz-brand-logo-box,
+aside > div.bg-brand-lime:first-child {
+    background: var(--crew-black) !important;
+    border-right-color: var(--crew-black) !important;
+}
+.rlz-brand-logo-box span,
+aside > div.bg-brand-lime:first-child span { color: var(--crew-white) !important; opacity: .8; }
+
+/* Hero title: the line mask clipped descenders (g, p, q, Q) in Portuguese words */
+.tft-h2-vanguard__title-line {
+    padding-bottom: .14em;
+    margin-bottom: -.14em;
+}
+
+/* --------------------------------------------------------------------------
+   Light-surface fixes: the template's accent was lime, now white.
+   On white/light surfaces the accent must flip to ink.
+   -------------------------------------------------------------------------- */
+.crew-badge {
+    background: var(--crew-ink) !important;
+    box-shadow: 0 20px 50px rgba(0,0,0,.25) !important;
+}
+.crew-badge i, .crew-badge svg { color: var(--crew-white) !important; }
+
+
+/* --------------------------------------------------------------------------
+   CTA band (before footer)
+   -------------------------------------------------------------------------- */
+.crew-cta {
+    background: var(--crew-white);
+    color: var(--crew-ink);
+    padding: 8rem 8%;
+    border-top: 1px solid rgba(0,0,0,.06);
+}
+.crew-cta__inner {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+    align-items: end;
+}
+@media (min-width: 1024px) {
+    .crew-cta__inner { grid-template-columns: 1.4fr 1fr; gap: 4rem; }
+    .crew-cta__kicker { grid-column: 1 / -1; }
+}
+.crew-cta__kicker {
+    font: 700 11px/1 var(--font-body);
+    letter-spacing: .5em;
+    text-transform: uppercase;
+    color: rgba(0,0,0,.35);
+}
+.crew-cta__title {
+    font-size: clamp(3rem, 7vw, 6.5rem);
+    line-height: .9;
+    letter-spacing: -.03em;
+    margin: 0;
+}
+.crew-cta__text {
+    font: 400 1rem/1.7 var(--font-body);
+    color: rgba(0,0,0,.55);
+    max-width: 26rem;
+    margin: 0 0 2rem;
+}
+.crew-cta__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: .75rem;
+    padding: 1.1rem 2rem;
+    border-radius: 999px;
+    background: var(--crew-ink);
+    color: var(--crew-white);
+    font: 700 12px/1 var(--font-body);
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    transition: transform .35s var(--tft-ease), background-color .25s ease;
+}
+.crew-cta__btn svg { width: 16px; height: 16px; transition: transform .35s var(--tft-ease); }
+.crew-cta__btn:hover { background: var(--crew-black); transform: translateY(-2px); }
+.crew-cta__btn:hover svg { transform: translate(3px, -3px); }
+
+/* Footer bottom row: keep language switch centered between copyright and back-to-top */
+.tft-footer-bottom { align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+
+/* --------------------------------------------------------------------------
+   Home: Crew Comunidades teaser
+   -------------------------------------------------------------------------- */
+.crew-comm {
+    background: var(--crew-black);
+    color: var(--crew-white);
+    padding: 8rem 8%;
+    border-top: 1px solid rgba(255,255,255,.08);
+}
+.crew-comm__head {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+    align-items: end;
+    margin-bottom: 4.5rem;
+}
+@media (min-width: 1024px) {
+    .crew-comm__head { grid-template-columns: 1.5fr 1fr; gap: 5rem; }
+}
+.crew-comm__kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    font: 700 11px/1 var(--font-body);
+    letter-spacing: .5em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.45);
+    margin-bottom: 2rem;
+}
+.crew-comm__kicker::before { content: ""; width: 3rem; height: 1px; background: rgba(255,255,255,.3); }
+.crew-comm__title {
+    font-size: clamp(2.6rem, 5.6vw, 5.5rem);
+    line-height: .95;
+    letter-spacing: -.03em;
+    margin: 0;
+}
+.crew-comm__title span { color: rgba(255,255,255,.4); }
+.crew-comm__text {
+    font: 400 1rem/1.75 var(--font-body);
+    color: rgba(255,255,255,.55);
+    margin: 0 0 2rem;
+    max-width: 30rem;
+}
+.crew-comm__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: .75rem;
+    padding: 1.1rem 2rem;
+    border-radius: 999px;
+    background: var(--crew-white);
+    color: var(--crew-black);
+    font: 700 12px/1 var(--font-body);
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    transition: transform .35s var(--tft-ease);
+}
+.crew-comm__btn svg { width: 16px; height: 16px; transition: transform .35s var(--tft-ease); }
+.crew-comm__btn:hover { transform: translateY(-2px); }
+.crew-comm__btn:hover svg { transform: translate(3px, -3px); }
+
+.crew-comm__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    border-top: 1px solid rgba(255,255,255,.1);
+    border-left: 1px solid rgba(255,255,255,.1);
+}
+@media (min-width: 1024px) { .crew-comm__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 1440px) { .crew-comm__grid { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+.crew-comm__card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 15rem;
+    padding: 1.75rem;
+    border-right: 1px solid rgba(255,255,255,.1);
+    border-bottom: 1px solid rgba(255,255,255,.1);
+    color: var(--crew-white);
+    transition: background-color .4s ease, color .4s ease;
+}
+.crew-comm__index {
+    font: 700 10px/1 var(--font-body);
+    letter-spacing: .3em;
+    color: rgba(255,255,255,.3);
+}
+.crew-comm__icon, .crew-comm__card svg.crew-comm__icon {
+    width: 28px; height: 28px;
+    margin: 1.75rem 0 0;
+    stroke-width: 1.5;
+}
+.crew-comm__name {
+    font-size: clamp(1.35rem, 2vw, 1.75rem);
+    line-height: 1.05;
+    margin: auto 0 .75rem;
+    padding-top: 2rem;
+}
+.crew-comm__channels {
+    font: 500 11px/1.6 var(--font-body);
+    letter-spacing: .04em;
+    color: rgba(255,255,255,.4);
+    margin: 0;
+    transition: color .4s ease;
+}
+.crew-comm__card:hover { background: var(--crew-white); color: var(--crew-black); }
+.crew-comm__card:hover .crew-comm__index,
+.crew-comm__card:hover .crew-comm__channels { color: rgba(0,0,0,.5); }
+@media (max-width: 639px) {
+    .crew-comm { padding: 5rem 1.5rem; }
+    .crew-comm__card { min-height: 12rem; padding: 1.25rem; }
+}
+
+/* Photos keep their original colors (the B&W identity is for the UI only).
+   Neutralizes the template's "grayscale until hover" effects. */
+.tft-card__media,
+.service-card-img,
+.tft-team-card-elite__img,
+.tft-widget-featured__img {
+    filter: none !important;
+}
+
+/* Tabs badge (home "Marketing feito em equipe"): mirrors the active tab's icon */
+.crew-badge .crew-badge__icon,
+.crew-badge svg.crew-badge__icon {
+    width: 44px; height: 44px;
+    color: var(--crew-white) !important;
+    stroke: var(--crew-white);
+    stroke-width: 1.6;
+}
+
+/* Home hero: full-bleed photo behind the Vanguard slider, darkened for legibility */
+.crew-hero-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    object-fit: cover;
+    opacity: .28;
+}
+.tft-h2-vanguard__bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(10,10,10,.85) 0%, rgba(10,10,10,.45) 55%, rgba(10,10,10,.7) 100%),
+                linear-gradient(0deg, rgba(10,10,10,.9) 0%, transparent 35%);
+}
+
+/* Service / community cards that have a real photo: keep it visible behind the text */
+.service-card.crew-has-photo .crew-card-photo {
+    height: 100% !important;
+    opacity: .45 !important;
+    transition: opacity .8s ease;
+}
+.service-card.crew-has-photo:hover .crew-card-photo { opacity: .6 !important; }
+.service-card.crew-has-photo .crew-card-photo::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(10,10,10,.35) 0%, rgba(10,10,10,.75) 45%, rgba(10,10,10,.95) 100%);
+}
+
+/* Newsletter: anti-spam field (hidden from people) and inline status message */
+.crew-hp {
+    position: absolute !important;
+    left: -9999px !important;
+    width: 1px !important;
+    height: 1px !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+.tft-footer-newsletter { position: relative; }
+.crew-news-msg {
+    margin: .9rem 0 0;
+    font: 500 12px/1.5 var(--font-body);
+    color: rgba(255,255,255,.7);
+}
+.crew-news-msg[data-status="invalid"],
+.crew-news-msg[data-status="error"] { color: rgba(255,255,255,.55); font-style: italic; }
+
+/* Home community cards with photos: darkened photo behind the content, brighter on hover */
+.crew-comm__card { overflow: hidden; isolation: isolate; }
+.crew-comm__photo {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    object-fit: cover;
+    opacity: .5;
+    z-index: -2;
+    transition: opacity .6s ease, transform 1.2s var(--tft-ease);
+}
+.crew-comm__card:has(.crew-comm__photo)::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(180deg, rgba(10,10,10,.25) 0%, rgba(10,10,10,.55) 45%, rgba(10,10,10,.92) 100%);
+    transition: opacity .6s ease;
+}
+.crew-comm__card:has(.crew-comm__photo):hover { background: transparent; color: var(--crew-white); }
+.crew-comm__card:has(.crew-comm__photo):hover .crew-comm__index,
+.crew-comm__card:has(.crew-comm__photo):hover .crew-comm__channels { color: rgba(255,255,255,.75); }
+.crew-comm__card:hover .crew-comm__photo { opacity: .85; transform: scale(1.06); }
+.crew-comm__card:has(.crew-comm__photo):hover::after { opacity: .8; }
+
+/* "Entre para a crew." CTA (sobre.html): real photo, slightly more visible than the template's 15% */
+.tft-cta-portal .tft-cta-parallax { opacity: .25; }
+.tft-cta-portal:hover .tft-cta-parallax { opacity: .32; }
+
+/* 404 page buttons */
+.crew-404-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 1.1rem 2rem; border-radius: 999px;
+    border: 1px solid rgba(255,255,255,.3); color: var(--crew-white);
+    font: 700 12px/1 var(--font-body); letter-spacing: .2em; text-transform: uppercase;
+    transition: background-color .25s ease, color .25s ease, border-color .25s ease;
+}
+.crew-404-btn:hover { border-color: var(--crew-white); }
+.crew-404-btn--solid { background: var(--crew-white); color: var(--crew-black); border-color: var(--crew-white); }
+.crew-404-btn--solid:hover { background: transparent; color: var(--crew-white); }
+
+/* --------------------------------------------------------------------------
+   Client area access (tools/set-client-link.js)
+   -------------------------------------------------------------------------- */
+.crew-client-btn {
+    margin-top: .75rem;
+    box-sizing: border-box;
+    width: 72px; height: 32px; flex: none; /* same box as the PT / EN switch above; never squeezed by the sidebar column */
+    display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+    padding: 0; border-radius: 999px;
+    border: 1px solid rgba(22,22,22,.15);
+    color: var(--crew-ink);
+    font: 700 9px/1 var(--font-body); letter-spacing: .06em; text-transform: uppercase;
+    transition: background-color .25s ease, color .25s ease, border-color .25s ease;
+}
+.crew-client-btn svg { width: 11px; height: 11px; flex: none; }
+.crew-client-btn:hover, .crew-client-btn:focus-visible, .crew-client-btn[aria-current] {
+    background: var(--crew-ink); color: var(--crew-white); border-color: var(--crew-ink);
+}
+.crew-client-icon {
+    width: 40px; height: 40px; margin-right: 8px; flex: none;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 999px; border: 1px solid rgba(22,22,22,.15); color: var(--crew-ink);
+}
+.crew-client-icon svg { width: 18px; height: 18px; }
+.crew-client-icon[aria-current] { background: var(--crew-ink); color: var(--crew-white); }
+.crew-menu-client {
+    flex: 1 0 100%;
+    display: flex; align-items: center; gap: .75rem;
+    padding: 1rem 1.25rem; border-radius: 999px;
+    border: 1px solid rgba(255,255,255,.18);
+    font: 600 14px/1 var(--font-body); color: rgba(255,255,255,.8);
+    transition: background-color .25s ease, color .25s ease, border-color .25s ease;
+}
+.crew-menu-client svg { width: 16px; height: 16px; }
+.crew-menu-client svg:last-child { margin-left: auto; opacity: .6; }
+.crew-menu-client:hover { background: var(--crew-white); color: var(--crew-black); border-color: var(--crew-white); }

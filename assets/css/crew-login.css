@@ -1,0 +1,222 @@
+/* ==========================================================================
+   CREW - Client area login (area-do-cliente.html)
+   Split screen: photo + promise on the left, focused login card on the right.
+   ========================================================================== */
+
+/* ---- Page: full-screen photo + centered card ---------------------------- */
+.crew-login {
+    position: relative;
+    min-height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    padding: clamp(2rem, 6vh, 5rem) clamp(1rem, 4vw, 3rem);
+    background: var(--crew-black);
+    overflow: hidden;
+    isolation: isolate;
+}
+.crew-login__photo {
+    position: absolute; inset: 0; z-index: -2;
+    width: 100%; height: 100%;
+    object-fit: cover; object-position: center 35%;
+    filter: none !important;
+}
+.crew-login__shade {
+    position: absolute; inset: 0; z-index: -1;
+    background:
+        radial-gradient(60% 70% at 50% 50%, rgba(10,10,10,.25), rgba(10,10,10,.7) 100%),
+        linear-gradient(to bottom, rgba(10,10,10,.35), rgba(10,10,10,.6));
+}
+
+/* ---- Glass card ---------------------------------------------------------- */
+.crew-login__panel { width: 100%; display: flex; justify-content: center; }
+.crew-login__card {
+    width: 100%; max-width: 440px;
+    padding: clamp(2rem, 4vw, 3rem);
+    border-radius: 28px;
+    border: 1px solid rgba(255,255,255,.18);
+    background: linear-gradient(160deg, rgba(255,255,255,.14), rgba(255,255,255,.05));
+    backdrop-filter: blur(22px) saturate(140%);
+    -webkit-backdrop-filter: blur(22px) saturate(140%);
+    box-shadow: 0 30px 80px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.12);
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .crew-login__card { background: rgba(22,22,22,.88); }
+}
+.crew-login__logo { height: 36px; width: auto; margin-bottom: 2.25rem; }
+.crew-login__title {
+    font-family: var(--font-display);
+    font-size: 2.5rem; line-height: 1; letter-spacing: -.02em;
+    color: var(--crew-white);
+    margin: 0 0 .75rem; padding: 0; border: 0;
+}
+.crew-login__lead { font: 400 15px/1.55 var(--font-body); color: rgba(255,255,255,.7); margin-bottom: 2rem; }
+
+/* ---- Fields ------------------------------------------------------------- */
+.crew-login__form { display: flex; flex-direction: column; gap: 1.25rem; }
+.crew-field__row { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
+.crew-field__label {
+    display: block; margin-bottom: .6rem;
+    font: 700 10px/1 var(--font-body); letter-spacing: .3em; text-transform: uppercase;
+    color: rgba(255,255,255,.65);
+}
+.crew-field__control {
+    position: relative; display: flex; align-items: center;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,.2);
+    background: rgba(255,255,255,.08);
+    transition: border-color .25s ease, background-color .25s ease, box-shadow .25s ease;
+}
+.crew-field__control > i {
+    position: absolute; left: 18px; top: 50%; transform: translateY(-50%);
+    width: 18px; height: 18px; display: flex;
+    color: rgba(255,255,255,.35); pointer-events: none; transition: color .25s ease;
+}
+.crew-field__control > i svg { width: 18px; height: 18px; }
+.crew-field__control input {
+    width: 100%; min-height: 54px;
+    padding: 0 16px 0 50px;
+    background: transparent; border: 0; outline: 0;
+    font: 500 15px/1 var(--font-body); color: var(--crew-white);
+}
+.crew-field__control input::placeholder { color: rgba(255,255,255,.4); }
+.crew-field__control:hover { border-color: rgba(255,255,255,.28); }
+.crew-field__control:focus-within {
+    border-color: var(--crew-white);
+    background: rgba(255,255,255,.12);
+    box-shadow: 0 0 0 4px rgba(255,255,255,.08);
+}
+.crew-field__control:focus-within > i { color: var(--crew-white); }
+.crew-field__control input:-webkit-autofill {
+    -webkit-text-fill-color: var(--crew-white);
+    -webkit-box-shadow: 0 0 0 100px #1a1a1a inset;
+    caret-color: var(--crew-white);
+}
+.crew-field__toggle {
+    flex: none; width: 52px; height: 54px; margin-right: 2px;
+    display: flex; align-items: center; justify-content: center;
+    background: transparent; border: 0; cursor: pointer;
+    color: rgba(255,255,255,.45); transition: color .2s ease;
+}
+.crew-field__toggle:hover, .crew-field__toggle:focus-visible { color: var(--crew-white); }
+.crew-field__toggle i, .crew-field__toggle svg { width: 18px; height: 18px; display: flex; }
+.crew-field__control:has(.crew-field__toggle) input { padding-right: 0; }
+
+.crew-field__error {
+    display: none; margin-top: .5rem;
+    font: 500 12px/1.4 var(--font-body); color: #ff8a8a;
+}
+.crew-field.is-invalid .crew-field__control { border-color: #ff8a8a; }
+.crew-field.is-invalid .crew-field__error { display: block; }
+
+/* ---- Checkbox ----------------------------------------------------------- */
+.crew-check {
+    display: inline-flex; align-items: center; gap: .7rem; cursor: pointer; user-select: none;
+    font: 500 14px/1 var(--font-body); color: rgba(255,255,255,.7);
+}
+.crew-check input { position: absolute; opacity: 0; pointer-events: none; }
+.crew-check__box {
+    width: 20px; height: 20px; border-radius: 6px;
+    border: 1px solid rgba(255,255,255,.3);
+    display: flex; align-items: center; justify-content: center;
+    transition: background-color .2s ease, border-color .2s ease;
+}
+.crew-check__box svg { width: 14px; height: 14px; color: var(--crew-black); opacity: 0; transition: opacity .2s ease; }
+.crew-check input:checked + .crew-check__box { background: var(--crew-white); border-color: var(--crew-white); }
+.crew-check input:checked + .crew-check__box svg { opacity: 1; }
+.crew-check input:focus-visible + .crew-check__box { box-shadow: 0 0 0 4px rgba(255,255,255,.15); }
+
+/* ---- Actions ------------------------------------------------------------ */
+.crew-login__submit {
+    position: relative; isolation: isolate;
+    margin-top: .5rem;
+    display: inline-flex; align-items: center; justify-content: center; gap: .75rem;
+    min-height: 56px; border-radius: 999px;
+    border: 1px solid var(--crew-white);
+    background: var(--crew-white); color: var(--crew-black);
+    font: 700 13px/1 var(--font-body); letter-spacing: .2em; text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color .35s ease, color .35s ease, border-color .35s ease, transform .2s ease;
+}
+.crew-login__submit svg { width: 18px; height: 18px; transition: transform .3s ease; }
+
+/* Hover: the button turns black and a white light travels around its border
+   (::before = sharp highlight on the border, ::after = soft glow outside it). */
+@property --crew-glow-angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+.crew-login__submit::before,
+.crew-login__submit::after {
+    content: ""; position: absolute; pointer-events: none;
+    border-radius: inherit;
+    background: conic-gradient(from var(--crew-glow-angle),
+        transparent 0deg 250deg,
+        rgba(255,255,255,.25) 285deg,
+        #fff 318deg,
+        rgba(255,255,255,.25) 340deg,
+        transparent 360deg);
+    opacity: 0; transition: opacity .4s ease;
+}
+.crew-login__submit::before {
+    inset: -1px; padding: 1.5px;
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
+.crew-login__submit::after { inset: -3px; z-index: -1; filter: blur(12px); }
+.crew-login__submit:hover,
+.crew-login__submit:focus-visible {
+    background: var(--crew-black); color: var(--crew-white); border-color: rgba(255,255,255,.14);
+}
+.crew-login__submit:hover::before, .crew-login__submit:hover::after,
+.crew-login__submit:focus-visible::before, .crew-login__submit:focus-visible::after {
+    opacity: 1; animation: crew-glow-spin 2.6s linear infinite;
+}
+.crew-login__submit:hover::after, .crew-login__submit:focus-visible::after { opacity: .75; }
+@keyframes crew-glow-spin { to { --crew-glow-angle: 360deg; } }
+@media (prefers-reduced-motion: reduce) {
+    .crew-login__submit:hover::before, .crew-login__submit:hover::after { animation: none; --crew-glow-angle: 110deg; }
+}
+.crew-login__submit:hover svg { transform: translateX(4px); }
+.crew-login__submit:active { transform: scale(.98); }
+.crew-login__submit:focus-visible { outline: 2px solid var(--crew-white); outline-offset: 4px; }
+.crew-login__submit.is-loading { pointer-events: none; opacity: .7; }
+
+.crew-login__notice {
+    padding: 1rem 1.1rem; border-radius: 14px;
+    border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.05);
+    font: 400 14px/1.55 var(--font-body); color: rgba(255,255,255,.8);
+}
+.crew-login__notice a { color: var(--crew-white); text-decoration: underline; text-underline-offset: 3px; }
+
+.crew-login__link {
+    font: 500 13px/1.4 var(--font-body); color: rgba(255,255,255,.55);
+    text-decoration: underline; text-decoration-color: rgba(255,255,255,.2); text-underline-offset: 4px;
+    transition: color .2s ease, text-decoration-color .2s ease;
+}
+.crew-login__link:hover { color: var(--crew-white); text-decoration-color: var(--crew-white); }
+.crew-login__link--strong { color: var(--crew-white); font-weight: 700; }
+
+.crew-login__divider {
+    display: flex; align-items: center; gap: 1rem; margin: 2rem 0 1.25rem;
+    font: 700 10px/1 var(--font-body); letter-spacing: .3em; text-transform: uppercase; color: rgba(255,255,255,.3);
+}
+.crew-login__divider::before, .crew-login__divider::after { content: ""; flex: 1; height: 1px; background: rgba(255,255,255,.1); }
+.crew-login__alt { text-align: center; font: 400 14px/1.5 var(--font-body); color: rgba(255,255,255,.5); }
+
+/* ---- Responsive --------------------------------------------------------- */
+@media (max-width: 480px) {
+    .crew-login__card { padding: 1.75rem 1.25rem; border-radius: 22px; }
+    .crew-login__title { font-size: 2rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .crew-login *, .crew-login *::before, .crew-login *::after { transition: none !important; }
+}
+
+/* ---- Wrong e-mail / password -------------------------------------------- */
+.crew-login__notice.is-error { border-color: rgba(255,92,92,.5); background: rgba(255,92,92,.1); color: #ffd0d0; }
+.crew-login__card.is-denied { animation: crew-login-deny .5s cubic-bezier(.36,.07,.19,.97) both; }
+@keyframes crew-login-deny {
+    10%, 90% { translate: -2px 0; }
+    20%, 80% { translate: 4px 0; }
+    30%, 50%, 70% { translate: -8px 0; }
+    40%, 60% { translate: 8px 0; }
+    100% { translate: 0 0; }
+}
+@media (prefers-reduced-motion: reduce) { .crew-login__card.is-denied { animation: none; } }

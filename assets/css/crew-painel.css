@@ -1,0 +1,270 @@
+/* ==========================================================================
+   CREW - Client platforms hub (painel-cliente.html)
+   Full-screen photo (same as the login), swipeable stack of platform cards.
+   ========================================================================== */
+
+.crew-painel {
+    position: relative; isolation: isolate; overflow: hidden;
+    min-height: 100%;
+    display: flex; flex-direction: column; align-items: center;
+    gap: clamp(1.5rem, 3vh, 2.5rem);
+    padding: clamp(1.5rem, 4vh, 3rem) clamp(1rem, 4vw, 3.5rem) clamp(2rem, 5vh, 3rem);
+    background: var(--crew-black);
+}
+.crew-painel__photo {
+    position: absolute; inset: 0; z-index: -2;
+    width: 100%; height: 100%; object-fit: cover; object-position: center 35%;
+    filter: blur(6px) !important; transform: scale(1.08);
+}
+.crew-painel__shade {
+    position: absolute; inset: 0; z-index: -1;
+    background:
+        radial-gradient(55% 60% at 50% 55%, rgba(10,10,10,.35), rgba(10,10,10,.85) 100%),
+        linear-gradient(to bottom, rgba(10,10,10,.55), rgba(10,10,10,.75));
+}
+
+/* ---- Header ----------------------------------------------------------------- */
+.crew-painel__head {
+    width: 100%; max-width: 1100px;
+    display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem;
+}
+.crew-painel__kicker {
+    display: block; margin-bottom: .75rem;
+    font: 700 10px/1 var(--font-body); letter-spacing: .45em; text-transform: uppercase; color: rgba(255,255,255,.55);
+}
+.crew-painel__title {
+    margin: 0; padding: 0; border: 0;
+    font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3.25rem); line-height: 1; letter-spacing: -.02em;
+    color: var(--crew-white);
+}
+.crew-painel__logout {
+    display: inline-flex; align-items: center; gap: .5rem;
+    padding: .7rem 1.1rem; border-radius: 999px;
+    border: 1px solid rgba(255,255,255,.2); background: rgba(255,255,255,.06);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    font: 600 12px/1 var(--font-body); letter-spacing: .08em; color: rgba(255,255,255,.8);
+    transition: background-color .25s ease, color .25s ease;
+}
+.crew-painel__logout svg { width: 15px; height: 15px; }
+.crew-painel__logout:hover { background: var(--crew-white); color: var(--crew-black); }
+
+/* ---- Deck ------------------------------------------------------------------- */
+.crew-deck { display: flex; flex-direction: column; align-items: center; gap: 1.25rem; width: 100%; }
+.crew-deck__stage {
+    position: relative;
+    width: min(360px, 84vw);
+    height: clamp(470px, 62vh, 540px);
+    margin-top: 72px; /* room for the cards peeking behind */
+    touch-action: pan-y;
+    outline: none;
+}
+.crew-deck__stage:focus-visible { outline: 2px solid rgba(255,255,255,.6); outline-offset: 12px; border-radius: 32px; }
+.crew-deck__card {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; gap: 1rem;
+    padding: 1.25rem 1.25rem 1.4rem;
+    border-radius: 28px;
+    border: 1px solid rgba(255,255,255,.14);
+    background: linear-gradient(170deg, #262626, #0e0e0e);
+    box-shadow: 0 30px 70px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.08);
+    color: var(--crew-white);
+    transform-origin: 50% 100%;
+    transition: transform .55s cubic-bezier(.22,.8,.26,1), opacity .45s ease;
+    user-select: none; -webkit-user-select: none;
+    will-change: transform;
+}
+.crew-deck__card.is-top { cursor: grab; }
+.crew-deck__card.is-dragging { cursor: grabbing; transition: none; }
+.crew-deck__card.is-leaving { transition: transform .5s cubic-bezier(.5,0,.75,0), opacity .5s ease; }
+
+.crew-deck__top { display: flex; align-items: center; justify-content: space-between; }
+.crew-deck__icon {
+    width: 38px; height: 38px; border-radius: 999px;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.06);
+}
+.crew-deck__icon svg { width: 17px; height: 17px; }
+.crew-deck__num { font: 700 11px/1 var(--font-body); letter-spacing: .3em; color: rgba(255,255,255,.45); }
+.crew-deck__title {
+    margin: 0; padding: 0; border: 0;
+    font-family: var(--font-display); font-size: 2rem; line-height: .95; letter-spacing: -.01em;
+    text-transform: uppercase; color: var(--crew-white);
+}
+.crew-deck__media { flex: 1; min-height: 0; border-radius: 18px; overflow: hidden; background: #1a1a1a; }
+.crew-deck__media img { width: 100%; height: 100%; object-fit: cover; filter: none !important; pointer-events: none; }
+.crew-deck__text { font: 400 14px/1.5 var(--font-body); color: rgba(255,255,255,.65); }
+.crew-deck__cta {
+    --glow: 255 255 255;
+    position: relative; isolation: isolate;
+    display: inline-flex; align-items: center; justify-content: center; gap: .6rem;
+    min-height: 50px; border-radius: 999px;
+    background: var(--crew-white); color: var(--crew-black); border: 1px solid var(--crew-white);
+    font: 700 12px/1 var(--font-body); letter-spacing: .18em; text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color .35s ease, color .35s ease, border-color .35s ease;
+}
+.crew-deck__cta svg { width: 16px; height: 16px; transition: transform .3s ease; }
+.crew-deck__cta:hover svg { transform: translate(2px, -2px); }
+
+/* Hover: same light-around-the-border effect as the login button, in the card's color
+   (::before = sharp highlight on the border, ::after = soft glow outside it). */
+@property --crew-glow-angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+.crew-deck__cta::before,
+.crew-deck__cta::after {
+    content: ""; position: absolute; pointer-events: none;
+    border-radius: inherit;
+    background: conic-gradient(from var(--crew-glow-angle),
+        transparent 0deg 250deg,
+        rgb(var(--glow) / .25) 285deg,
+        rgb(var(--glow)) 318deg,
+        rgb(var(--glow) / .25) 340deg,
+        transparent 360deg);
+    opacity: 0; transition: opacity .4s ease;
+}
+.crew-deck__cta::before {
+    inset: -1px; padding: 1.5px;
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
+.crew-deck__cta::after { inset: -3px; z-index: -1; filter: blur(12px); }
+.crew-deck__cta:hover,
+.crew-deck__cta:focus-visible {
+    background: var(--crew-black); color: rgb(var(--glow)); border-color: rgb(var(--glow) / .14);
+}
+.crew-deck__cta:focus-visible { outline: 2px solid rgb(var(--glow) / .7); outline-offset: 4px; }
+.crew-deck__cta:hover::before, .crew-deck__cta:hover::after,
+.crew-deck__cta:focus-visible::before, .crew-deck__cta:focus-visible::after {
+    opacity: 1; animation: crew-glow-spin 2.6s linear infinite;
+}
+.crew-deck__cta:hover::after, .crew-deck__cta:focus-visible::after { opacity: .75; }
+@keyframes crew-glow-spin { to { --crew-glow-angle: 360deg; } }
+@media (prefers-reduced-motion: reduce) {
+    .crew-deck__cta:hover::before, .crew-deck__cta:hover::after { animation: none; --crew-glow-angle: 110deg; }
+}
+
+/* ---- Controls --------------------------------------------------------------- */
+.crew-deck__controls { display: flex; align-items: center; gap: 1.25rem; }
+.crew-deck__arrow {
+    width: 48px; height: 48px; border-radius: 999px;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid rgba(255,255,255,.2); background: rgba(255,255,255,.06);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    color: var(--crew-white); cursor: pointer;
+    transition: background-color .25s ease, color .25s ease;
+}
+.crew-deck__arrow svg { width: 18px; height: 18px; }
+.crew-deck__arrow:hover, .crew-deck__arrow:focus-visible { background: var(--crew-white); color: var(--crew-black); }
+.crew-deck__counter { min-width: 64px; text-align: center; font: 500 13px/1 var(--font-body); letter-spacing: .15em; color: rgba(255,255,255,.5); }
+.crew-deck__counter strong { color: var(--crew-white); font-weight: 700; }
+.crew-deck__hint { font: 400 12px/1.4 var(--font-body); color: rgba(255,255,255,.4); }
+
+.crew-deck__chips { display: flex; flex-wrap: wrap; justify-content: center; gap: .6rem; max-width: 760px; }
+.crew-deck__chip {
+    display: inline-flex; align-items: center; gap: .5rem;
+    padding: .65rem 1rem; border-radius: 999px;
+    border: 1px solid rgba(255,255,255,.16); background: rgba(10,10,10,.35);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    font: 500 13px/1 var(--font-body); color: rgba(255,255,255,.7); cursor: pointer;
+    transition: background-color .25s ease, color .25s ease, border-color .25s ease;
+}
+.crew-deck__chip svg { width: 15px; height: 15px; }
+.crew-deck__chip:hover { border-color: rgba(255,255,255,.4); color: var(--crew-white); }
+.crew-deck__chip[aria-current="true"] { background: var(--crew-white); color: var(--crew-black); border-color: var(--crew-white); }
+
+@media (max-width: 640px) {
+    .crew-painel__head { align-items: flex-start; }
+    .crew-deck__hint { display: none; }
+    .crew-deck__title { font-size: 1.7rem; }
+    .crew-painel { gap: 1rem; }
+    .crew-deck__stage { height: min(440px, 56vh); margin-top: 56px; width: min(320px, 80vw); }
+    .crew-deck__card { gap: .8rem; padding: 1rem 1rem 1.1rem; }
+    .crew-deck__text { font-size: 13px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .crew-deck__card, .crew-deck__card.is-leaving { transition: opacity .2s ease; }
+}
+
+/* ---- Themed cards (accent / deep set per platform in tools/make-painel.js) ---- */
+.crew-deck__card.is-themed {
+    border-color: rgb(var(--deck-accent) / .35);
+    background:
+        radial-gradient(120% 70% at 50% 0%, rgb(var(--deck-accent) / .18), transparent 60%),
+        linear-gradient(170deg, rgb(var(--deck-deep)), #070907);
+    box-shadow: 0 30px 70px rgba(0,0,0,.5), 0 0 60px rgb(var(--deck-accent) / .12), inset 0 1px 0 rgb(var(--deck-accent) / .25);
+}
+.crew-deck__card.is-themed .crew-deck__icon {
+    border-color: rgb(var(--deck-accent) / .45); background: rgb(var(--deck-accent) / .12); color: rgb(var(--deck-accent));
+}
+.crew-deck__card.is-themed .crew-deck__num { color: rgb(var(--deck-accent) / .8); }
+.crew-deck__card.is-themed .crew-deck__title { color: rgb(var(--deck-accent)); text-shadow: 0 0 24px rgb(var(--deck-accent) / .35); }
+.crew-deck__card.is-themed .crew-deck__media { box-shadow: 0 0 0 1px rgb(var(--deck-accent) / .3); }
+.crew-deck__card.is-themed .crew-deck__text { color: rgb(var(--deck-accent) / .8); color: color-mix(in srgb, rgb(var(--deck-accent)) 40%, #fff 60%); }
+.crew-deck__card.is-themed .crew-deck__cta { --glow: var(--deck-accent); background: rgb(var(--deck-accent)); border-color: rgb(var(--deck-accent)); color: rgb(var(--deck-on)); }
+.crew-deck__card.is-themed .crew-deck__cta:hover,
+.crew-deck__card.is-themed .crew-deck__cta:focus-visible { background: rgb(var(--deck-deep)); color: rgb(var(--deck-accent)); border-color: rgb(var(--deck-accent) / .18); }
+.crew-deck__chip.is-themed[aria-current="true"] { background: rgb(var(--deck-accent)); border-color: rgb(var(--deck-accent)); color: rgb(var(--deck-on)); }
+.crew-deck__text strong { font-weight: 700; color: inherit; }
+/* ink: 'white' - themed card that keeps its typography white */
+.crew-deck__card.is-ink-white .crew-deck__title { color: var(--crew-white); text-shadow: 0 0 24px rgb(var(--deck-accent) / .45); }
+.crew-deck__card.is-ink-white .crew-deck__num { color: rgba(255,255,255,.6); }
+.crew-deck__card.is-ink-white .crew-deck__text { color: rgba(255,255,255,.75); }
+.crew-deck__card.is-ink-white .crew-deck__text strong { color: var(--crew-white); }
+
+/* ---- "Em breve" -> access denied: shake + notice ------------------------------ */
+.crew-deck__card.is-denied { animation: crew-deny .5s cubic-bezier(.36,.07,.19,.97) both; }
+.crew-deck__cta.is-denied {
+    animation: crew-deny-pulse .9s ease both;
+    border-color: #ff5c5c !important; color: #ff8a8a !important;
+}
+@keyframes crew-deny {
+    10%, 90% { translate: -2px 0; }
+    20%, 80% { translate: 4px 0; }
+    30%, 50%, 70% { translate: -8px 0; }
+    40%, 60% { translate: 8px 0; }
+    100% { translate: 0 0; }
+}
+@keyframes crew-deny-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(255,92,92,.55); }
+    100% { box-shadow: 0 0 0 14px rgba(255,92,92,0); }
+}
+.crew-deck__alert {
+    position: absolute; left: .75rem; right: .75rem; bottom: .75rem; z-index: 2;
+    display: flex; align-items: flex-start; gap: .75rem;
+    padding: 1rem 2.75rem 1rem 1rem;
+    border-radius: 20px;
+    border: 1px solid rgba(255,92,92,.45);
+    background: rgba(18,10,10,.92);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 20px 40px rgba(0,0,0,.5);
+    opacity: 0; transform: translateY(16px) scale(.97);
+    transition: opacity .3s ease, transform .35s cubic-bezier(.22,.8,.26,1);
+}
+.crew-deck__alert[hidden] { display: none; }
+.crew-deck__alert.is-open { opacity: 1; transform: none; }
+.crew-deck__alert-icon {
+    flex: none; width: 34px; height: 34px; border-radius: 999px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(255,92,92,.15); color: #ff8a8a;
+    animation: crew-deny-lock .6s .15s ease both;
+}
+.crew-deck__alert-icon svg { width: 16px; height: 16px; }
+@keyframes crew-deny-lock {
+    0%, 100% { rotate: 0deg; }
+    25% { rotate: -14deg; }
+    50% { rotate: 10deg; }
+    75% { rotate: -6deg; }
+}
+.crew-deck__alert p { font: 400 13px/1.5 var(--font-body); color: rgba(255,255,255,.85); }
+.crew-deck__alert a { color: var(--crew-white); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.crew-deck__alert-close {
+    position: absolute; top: .6rem; right: .6rem;
+    width: 30px; height: 30px; border-radius: 999px;
+    display: flex; align-items: center; justify-content: center;
+    background: transparent; border: 0; color: rgba(255,255,255,.55); cursor: pointer;
+}
+.crew-deck__alert-close:hover { color: var(--crew-white); background: rgba(255,255,255,.08); }
+.crew-deck__alert-close svg { width: 15px; height: 15px; }
+@media (prefers-reduced-motion: reduce) {
+    .crew-deck__card.is-denied, .crew-deck__cta.is-denied, .crew-deck__alert-icon { animation: none; }
+}

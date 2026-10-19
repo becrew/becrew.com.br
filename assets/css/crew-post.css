@@ -1,0 +1,80 @@
+/* Crew - post.html (single post) additions. Grays only. */
+
+.crew-post-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+  transition: color 0.3s ease;
+}
+.crew-post-back:hover { color: #ffffff; }
+.crew-post-back svg { width: 14px; height: 14px; }
+
+.tft-page-single-post .article-body p.crew-post-lead {
+  font-size: clamp(1.25rem, 1.8vw, 1.6rem);
+  line-height: 1.6;
+  color: #ffffff;
+  font-weight: 400;
+}
+
+.tft-page-single-post .article-body p a {
+  color: #ffffff;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-color: rgba(255, 255, 255, 0.35);
+}
+.tft-page-single-post .article-body p a:hover { text-decoration-color: #ffffff; }
+
+.crew-post-list {
+  margin: 0 0 2rem;
+  padding-left: 1.5rem;
+  list-style: disc;
+  font-size: clamp(1rem, 1.2vw, 1.25rem);
+  line-height: 1.8;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.7);
+}
+.crew-post-list--ordered { list-style: decimal; }
+.crew-post-list li { margin-bottom: 1rem; padding-left: 0.25rem; }
+.crew-post-list li::marker { color: rgba(255, 255, 255, 0.4); }
+.crew-post-list strong { color: #ffffff; font-weight: 600; }
+
+.crew-post-figure img { display: block; }
+.crew-post-figure figcaption {
+  margin-top: 1rem;
+  font-size: 12px;
+  line-height: 1.6;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.crew-post-tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+.crew-post-tags__label {
+  margin-right: 0.5rem;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.tft-page-single-post .article-body h3.crew-post-h3 {
+  margin: 2.5rem 0 1rem;
+  font-family: 'Space Grotesk', serif;
+  font-size: clamp(1.25rem, 1.6vw, 1.6rem);
+  line-height: 1.3;
+  font-weight: 500;
+  color: #ffffff;
+}
+
+.crew-post-avatar { background: #ffffff; }
