@@ -23,6 +23,10 @@ function crew_lead_reply($ok, $code = 200) {
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') crew_lead_reply(false, 405);
 
+// Limite de envios por IP: 5 por minuto.
+require __DIR__ . '/ratelimit.php';
+if (!crew_rl_hit('lead', 5, 60)) crew_lead_reply(false, 429);
+
 $raw = file_get_contents('php://input', false, null, 0, 20000);
 $data = json_decode($raw, true);
 if (!is_array($data)) crew_lead_reply(false, 400);

@@ -1,6 +1,7 @@
 # Ficam só no servidor (e no repositório privado becrew.com.br-privado)
 assets/php/users.php
 loopy/
+assets/php/data/
 
 # Backups e lixo de sistema
 *.bak-*
