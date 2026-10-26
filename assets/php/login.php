@@ -5,6 +5,7 @@
  * Sem JavaScript, redireciona para o painel ou de volta ao login com ?erro=1.
  */
 require __DIR__ . '/auth.php';
+require __DIR__ . '/ratelimit.php';
 
 $wantsJson = isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false;
 $panel = '../../painel.php';
@@ -29,7 +30,12 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 crew_session_start();
 
-// Limite simples de tentativas por sessão: 5 erros bloqueiam por 5 minutos.
+// Limite por IP, gravado no servidor (apagar o cookie não adianta): 8 erros bloqueiam por 15 minutos.
+if (crew_rl_blocked('login', 8, 900) > 0) {
+    crew_reply(false, $wantsJson, $login . '?erro=limite', 'limit');
+}
+
+// Limite por sessão, como segunda camada: 5 erros bloqueiam por 5 minutos.
 $now = time();
 if (!empty($_SESSION['crew_lock_until']) && $_SESSION['crew_lock_until'] > $now) {
     crew_reply(false, $wantsJson, $login . '?erro=limite', 'limit');
@@ -45,6 +51,7 @@ $dummy = '$2y$11$oEpSBVxOkUCTZWm/ZxN2t.HBAoJbsjUCJj6KlkSUCIP1P0iYZCP2y';
 $valid = password_verify($password, $hash ?: $dummy) && $hash !== null;
 
 if (!$valid) {
+    crew_rl_fail('login', 900);
     $_SESSION['crew_fails'] = (isset($_SESSION['crew_fails']) ? $_SESSION['crew_fails'] : 0) + 1;
     if ($_SESSION['crew_fails'] >= 5) {
         $_SESSION['crew_lock_until'] = $now + 300;
@@ -54,6 +61,7 @@ if (!$valid) {
     crew_reply(false, $wantsJson, $login . '?erro=1', 'invalid');
 }
 
+crew_rl_reset('login');
 session_regenerate_id(true);
 $_SESSION['crew_user'] = $email;
 $_SESSION['crew_fails'] = 0;

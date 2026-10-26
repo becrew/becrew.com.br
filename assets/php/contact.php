@@ -11,6 +11,14 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+require __DIR__ . '/ratelimit.php';
+
+// Limite de envios por IP: 3 por minuto (barra robôs que lotariam o e-mail de contato).
+if (!crew_rl_hit('contact', 3, 60)) {
+    header('Location: ' . $redirect . '?status=error');
+    exit;
+}
+
 $recipient = 'contato@becrew.com.br';
 $fromAddress = 'no-reply@becrew.com.br'; // Use um endereço do domínio do servidor (SPF/DKIM).
 

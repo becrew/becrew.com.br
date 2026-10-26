@@ -22,10 +22,15 @@ $wantsJson = isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], '
 
 function crew_newsletter_done($status, $wantsJson, $pages) {
     if ($wantsJson) {
+        if ($status === 'limit') {
+            http_response_code(429);
+            $status = 'error';
+        }
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode(['status' => $status]);
         exit;
     }
+    if ($status === 'limit') $status = 'error';
     $origin = isset($_POST['origem']) && is_string($_POST['origem']) ? $_POST['origem'] : '';
     $page = crew_valid_page($origin, $pages) ? $origin : 'index.html';
     header('Location: ../../' . $page . '?newsletter=' . $status . '#newsletter');
@@ -34,6 +39,12 @@ function crew_newsletter_done($status, $wantsJson, $pages) {
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     crew_newsletter_done('invalid', $wantsJson, $pages);
+}
+
+// Limite de envios por IP: 5 por minuto.
+require __DIR__ . '/ratelimit.php';
+if (!crew_rl_hit('newsletter', 5, 60)) {
+    crew_newsletter_done('limit', $wantsJson, $pages);
 }
 
 // Honeypot: bots costumam preencher todos os campos.
