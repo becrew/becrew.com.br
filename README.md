@@ -27,7 +27,17 @@ A `main` é protegida: toda mudança entra por Pull Request e precisa de aprova�
 Por segurança, alguns arquivos ficam só no servidor:
 
 - `assets/php/users.php`: usuários da área do cliente. Use [`users.example.php`](assets/php/users.example.php) como modelo.
+- `assets/php/data/`: contadores do limite de tentativas por IP (criada pelo próprio PHP).
 - `loopy/`: área privada de um cliente.
+
+## Testes
+
+Precisam de PHP no computador:
+
+```
+php tests/ratelimit_test.php
+bash tests/http_test.sh
+```
 
 ## Uso
 
