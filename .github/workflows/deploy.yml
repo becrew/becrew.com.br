@@ -1,6 +1,6 @@
 # Publica o site no Hostinger (public_html) a cada push na branch main.
 # Envia só os arquivos que mudaram. Arquivos que existem apenas no servidor
-# (loopy/, assets/php/users.php) não são tocados.
+# (loopy/, assets/php/users.php, assets/php/data/) não são tocados.
 name: Deploy no Hostinger
 
 on:
@@ -19,7 +19,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Enviar por FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        uses: SamKirkland/FTP-Deploy-Action@8e83cea8672e3fbcbb9fdafff34debf6ae4c5f65 # v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
@@ -31,7 +31,9 @@ jobs:
             **/.git*
             **/.git*/**
             .github/**
+            tests/**
             README.md
             assets/php/users.example.php
             loopy/**
             assets/php/users.php
+            assets/php/data/**
