@@ -13,6 +13,7 @@
   var estado = { entregas: [], frentes: [], carregado: false, filtroEstado: 'todos', filtroFrente: 'todas' };
   var ocupado = false;      // enviando uma decisão
   var formAberto = false;   // alguém está escrevendo um pedido de ajuste: não redesenhar por baixo
+  var geracao = 0;          // cada busca e cada decisão gravada avançam; resposta de busca antiga é descartada
   var ultimaBusca = 0;
 
   /* Motivos enviados à Plataforma em português (a equipe lê em português); só o rótulo na tela troca de idioma. */
@@ -153,7 +154,7 @@
       window.CrewArea.decidir({ tarefa: e.id, tipo: tipo, versao: versao, decisao: decisao, motivos: motivos, sugestao: sugestao })
         .then(function (r) {
           ocupado = false; formAberto = false;
-          if (r.status === 200 && r.corpo && r.corpo.entrega) { trocar(r.corpo.entrega); return; }
+          if (r.status === 200) { if (r.corpo && r.corpo.entrega) trocar(r.corpo.entrega); else buscar(true); return; } // gravou: sem a entrega na resposta, recarrega
           if (r.status === 409) { // o estado mudou: mostra o motivo e recarrega
             var m = r.corpo && typeof r.corpo.mensagem === 'string' ? r.corpo.mensagem : tx('ent.erro.salvar', 'Não foi possível salvar. Nada foi alterado. Tente de novo.');
             travar(false); erro(m); buscar(true, m); return;
@@ -283,6 +284,7 @@
   }
 
   function desenhar() {
+    formAberto = false; // o redesenho refaz todos os cartões: nenhum formulário sobrevive
     var alvo = raiz.querySelector('[data-entregas-lista]');
     if (!alvo) { alvo = el('div', 'ent-lista'); alvo.setAttribute('data-entregas-lista', ''); raiz.appendChild(alvo); }
     alvo.textContent = '';
@@ -337,6 +339,7 @@
   function mostrarStatus(texto) { statusEl.textContent = texto || ''; statusEl.hidden = !texto; }
 
   function trocar(nova) {
+    geracao++; // uma busca que estava em voo trazia o estado de antes da decisão
     for (var i = 0; i < estado.entregas.length; i++) if (estado.entregas[i].id === nova.id) { estado.entregas[i] = nova; break; }
     desenhar();
   }
@@ -344,12 +347,15 @@
   function buscar(forcar, mensagem) {
     if (!forcar && (ocupado || formAberto)) return;
     ultimaBusca = Date.now();
+    var minha = ++geracao;
     window.CrewArea.carregar().then(function (c) {
+      if (minha !== geracao || (!forcar && (ocupado || formAberto))) return; // chegou velha, ou alguém começou a decidir enquanto vinha
       estado.entregas = c.entregas; estado.frentes = Array.isArray(c.frentes) ? c.frentes : []; estado.carregado = true;
       mostrarStatus(mensagem || '');
       desenhar();
       if (mensagem) statusEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
     }, function () {
+      if (minha !== geracao) return;
       var msg = tx('area.erro.carregar', 'Não foi possível carregar agora. Tente de novo.');
       mostrarStatus(msg);
       if (!estado.carregado) {

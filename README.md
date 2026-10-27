@@ -32,14 +32,14 @@ O site é só a vitrine: nenhuma entrega nem decisão é guardada aqui. Cada log
 - O navegador fala só com `assets/php/area/api.php` (`GET ?acao=entregas`, `POST ?acao=decidir`). A ponte lê a empresa **da sessão**, nunca do navegador, e chama `crm.becrew.com.br` com um token que fica fora do `public_html`.
 - Escrita só por POST, com `X-Requested-With: fetch` e `Origin` igual ao do site. Limite de 60 leituras e 20 decisões por minuto, por usuário logado (hash do e-mail) e por IP.
 - Se a Plataforma não responder, a tela mostra "não foi possível carregar, tente de novo" e nada é gravado.
-- Contrato da API e desenho: ficam no repositório da Plataforma (`docs/INTEGRACOES.md` e `docs/SITE-ENTREGAS.md`). Plano desta fase: [`docs/PLANO-AREA-FASE1.md`](docs/PLANO-AREA-FASE1.md).
+- Contrato da API e desenho: ficam no repositório da Plataforma (`docs/INTEGRACOES.md` e `docs/SITE-ENTREGAS.md`).
 
 ## O que não está aqui
 
 Por segurança, alguns arquivos ficam só no servidor:
 
 - `assets/php/users.php`: usuários da área do cliente, cada um com a `empresa`. Use [`users.example.php`](assets/php/users.example.php) como modelo. O privado tem `ferramentas/criar-conta.php --empresa EMP-0000` para gerar a linha.
-- `crew-plataforma.php`, **um nível acima do `public_html`** (`domains/becrew.com.br/crew-plataforma.php`), permissão 600, com `<?php return ['url' => 'https://crm.becrew.com.br', 'token' => 'crewsite_...'];`. O token é gerado na tela Sistemas da Plataforma e nunca entra em git, HTML, JS nem chat.
+- `crew-plataforma.php`, **um nível acima do `public_html`**, permissão 600, com `<?php return ['url' => 'https://crm.becrew.com.br', 'token' => 'crewsite_...'];`. O token é gerado na tela Sistemas da Plataforma e nunca entra em git, HTML, JS nem chat.
 - `assets/php/data/`: contadores do limite de tentativas por IP (criada pelo próprio PHP).
 - `loopy/`: área privada de um cliente.
 

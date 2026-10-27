@@ -135,5 +135,17 @@ foreach (['inicio', 'entregas', 'relatorios', 'produtos', 'plataformas', 'soon']
 foreach (['inicio', 'entregas', 'plataformas'] as $n) { $dinamicas[] = "area.$n.meta"; $dinamicas[] = "area.$n.title"; }
 foreach ($dinamicas as $k) check("en: chave dinâmica '$k'", tem_chave($dic, $k));
 
+// --- repositório público: nada de plano interno nem de caminho do servidor ---
+$readme = file_get_contents("$raiz/README.md");
+check('público: README não traz o caminho do token no servidor', strpos($readme, 'domains/') === false);
+check('público: README não aponta para o plano interno', strpos($readme, 'PLANO-AREA') === false);
+check('público: o plano interno não está em docs/', !file_exists("$raiz/docs/PLANO-AREA-FASE1.md"));
+
+// --- tela de Entregas: o formulário aberto não pode travar a atualização depois de um redesenho ---
+$js = file_get_contents("$raiz/assets/js/crew-entregas.js");
+check('entregas.js: desenhar() zera formAberto', preg_match('/function desenhar\(\)\s*\{[^}]*formAberto = false/s', $js) === 1);
+check('entregas.js: resposta de busca antiga é descartada (geração)', strpos($js, 'geracao') !== false);
+check('entregas.js: 200 sem entrega recarrega a lista', preg_match('/status === 200[^;]*;?\s*[^\n]*buscar\(true\)/s', $js) === 1);
+
 echo "\n" . ($total - $fails) . " de $total passaram\n";
 exit($fails ? 1 : 0);
