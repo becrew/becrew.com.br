@@ -3,6 +3,7 @@
 .crew-entregas__status { margin: 0; color: rgba(255,255,255,.75); font-size: .95rem; }
 .crew-entregas__status[hidden] { display: none; }
 .ent-lista { display: flex; flex-direction: column; gap: 1.5rem; }
+.ent-lista > .crew-area-btn { align-self: flex-start; }
 
 .ent-filtros { display: flex; flex-direction: column; gap: .6rem; }
 .ent-chips { display: flex; flex-wrap: wrap; gap: .5rem; }

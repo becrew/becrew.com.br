@@ -138,11 +138,11 @@
     aj.type = 'button';
     linha.appendChild(ok); linha.appendChild(aj);
     caixa.appendChild(linha);
+    caixa.appendChild(msg); // o aviso fica logo abaixo dos botões, sempre à vista
     if (rodadas >= 2) caixa.appendChild(aviso(tx('ent.rodadas.limite', 'O contrato prevê 2 rodadas de ajuste e as duas já foram usadas. Você ainda pode aprovar.'), 'is-alerta'));
     var form = montarForm(tipo);
     form.raiz.hidden = true;
     caixa.appendChild(form.raiz);
-    caixa.appendChild(msg);
 
     function erro(t) { msg.textContent = t || ''; msg.hidden = !t; }
     function travar(sim) { ok.disabled = aj.disabled = form.enviar.disabled = sim; }
@@ -348,6 +348,7 @@
       estado.entregas = c.entregas; estado.frentes = Array.isArray(c.frentes) ? c.frentes : []; estado.carregado = true;
       mostrarStatus(mensagem || '');
       desenhar();
+      if (mensagem) statusEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
     }, function () {
       var msg = tx('area.erro.carregar', 'Não foi possível carregar agora. Tente de novo.');
       mostrarStatus(msg);

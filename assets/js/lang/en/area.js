@@ -1,5 +1,7 @@
 /* Crew - English strings for the client area (menu, Home and Deliveries). Portuguese lives in the HTML and in the crewT() fallbacks. */
 window.CREW_I18N = Object.assign(window.CREW_I18N || {}, {
+  'painel.kicker': 'Client area',
+  'painel.logout': 'Sign out',
   'area.nav.label': 'Client area',
   'area.nav.inicio': 'Home',
   'area.nav.entregas': 'Deliveries',

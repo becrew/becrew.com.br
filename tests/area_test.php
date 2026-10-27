@@ -112,5 +112,28 @@ check('perfil: empresa válida sai', crew_profile_from(['hash' => 'x', 'empresa'
 check('perfil: sem empresa → empresa null', crew_profile_from(['hash' => 'x'], 'a@b.com') === ['email' => 'a@b.com', 'empresa' => null]);
 check('perfil: empresa fora do formato → null', crew_profile_from(['hash' => 'x', 'empresa' => 'qualquer'], 'a@b.com') === ['email' => 'a@b.com', 'empresa' => null]);
 
+// --- textos em inglês: toda chave usada pelas páginas da área existe em common.js ou area.js ---
+$raiz = dirname(__DIR__);
+$dic = '';
+foreach (['common', 'area'] as $n) $dic .= file_get_contents("$raiz/assets/js/lang/en/$n.js");
+function tem_chave($dic, $k) { return strpos($dic, "'$k'") !== false; }
+foreach (['assets/php/area/layout.php', 'painel.php', 'entregas.php'] as $arq) {
+    preg_match_all('/data-i18n="([^"<]+)"/', file_get_contents("$raiz/$arq"), $m);
+    foreach (array_unique($m[1]) as $k) check("en: $arq usa '$k'", tem_chave($dic, $k));
+}
+foreach (['assets/js/crew-area.js', 'assets/js/crew-entregas.js'] as $arq) {
+    preg_match_all("/\b(?:T|tx)\('([a-z][a-z0-9.]*)'/", file_get_contents("$raiz/$arq"), $m);
+    foreach (array_unique($m[1]) as $k) { if (substr($k, -1) !== '.') check("en: $arq usa '$k'", tem_chave($dic, $k)); } // chave que termina em '.' é montada no código; ver $dinamicas
+}
+$dinamicas = [];
+foreach (['tema', 'arte'] as $t) {
+    foreach (['aprovar', 'ajuste'] as $b) $dinamicas[] = "ent.btn.$b.$t";
+    foreach (['titulo', 'sugestao', 'ph'] as $b) $dinamicas[] = "ent.rej.$b.$t";
+    for ($i = 1; $i <= 6; $i++) $dinamicas[] = "ent.motivo.$t.$i";
+}
+foreach (['inicio', 'entregas', 'relatorios', 'produtos', 'plataformas', 'soon'] as $n) $dinamicas[] = "area.nav.$n";
+foreach (['inicio', 'entregas', 'plataformas'] as $n) { $dinamicas[] = "area.$n.meta"; $dinamicas[] = "area.$n.title"; }
+foreach ($dinamicas as $k) check("en: chave dinâmica '$k'", tem_chave($dic, $k));
+
 echo "\n" . ($total - $fails) . " de $total passaram\n";
 exit($fails ? 1 : 0);
