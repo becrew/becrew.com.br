@@ -268,3 +268,59 @@
 @media (prefers-reduced-motion: reduce) {
     .crew-deck__card.is-denied, .crew-deck__cta.is-denied, .crew-deck__alert-icon { animation: none; }
 }
+
+/* ==========================================================================
+   Área do cliente por empresa: menu da área (abas) e Início
+   ========================================================================== */
+.crew-areanav {
+    width: 100%; max-width: 1100px;
+    display: flex; align-items: center; gap: .5rem; flex-wrap: nowrap;
+    overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch;
+    padding-bottom: 2px;
+}
+.crew-areanav::-webkit-scrollbar { display: none; }
+.crew-areanav__link {
+    flex: 0 0 auto;
+    display: inline-flex; align-items: center; gap: .5rem;
+    padding: .7rem 1.1rem; border-radius: 999px;
+    border: 1px solid rgba(255,255,255,.2); background: rgba(255,255,255,.06);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    font: 600 12px/1 var(--font-body); letter-spacing: .08em; color: rgba(255,255,255,.8);
+    white-space: nowrap; text-decoration: none;
+    transition: background-color .25s ease, color .25s ease, border-color .25s ease;
+}
+.crew-areanav__link svg { width: 15px; height: 15px; }
+a.crew-areanav__link:hover { background: rgba(255,255,255,.16); color: var(--crew-white); }
+.crew-areanav__link[aria-current="page"] { background: var(--crew-white); color: var(--crew-black); border-color: var(--crew-white); }
+.crew-areanav__link.is-soon { opacity: .55; cursor: default; }
+.crew-areanav__link em {
+    font: 700 9px/1 var(--font-body); letter-spacing: .12em; text-transform: uppercase; font-style: normal;
+    padding: .25rem .45rem; border-radius: 999px; background: rgba(255,255,255,.14);
+}
+.crew-areanav__link--sair { margin-left: auto; }
+.crew-areanav__link:focus-visible, .crew-area-btn:focus-visible { outline: 2px solid var(--crew-white); outline-offset: 3px; }
+
+.crew-area-card {
+    width: 100%; max-width: 1100px;
+    display: flex; flex-direction: column; align-items: flex-start; gap: .75rem;
+    padding: clamp(1.25rem, 3vw, 2rem); border-radius: 24px;
+    background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.16);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+}
+.crew-area-card__label { font: 700 10px/1 var(--font-body); letter-spacing: .4em; text-transform: uppercase; color: rgba(255,255,255,.6); }
+.crew-inicio__num { margin: 0; font-family: var(--font-display); font-size: clamp(3.5rem, 12vw, 6rem); line-height: 1; letter-spacing: -.03em; color: var(--crew-white); }
+.crew-inicio__text { margin: 0; font-size: 1rem; color: rgba(255,255,255,.8); max-width: 46ch; }
+.crew-area-btn {
+    display: inline-flex; align-items: center; gap: .6rem; margin-top: .5rem;
+    padding: .85rem 1.4rem; border-radius: 999px; border: 0; cursor: pointer;
+    background: var(--crew-white); color: var(--crew-black); text-decoration: none;
+    font: 700 13px/1 var(--font-body); letter-spacing: .04em;
+    transition: transform .2s ease, background-color .2s ease;
+}
+.crew-area-btn:hover { transform: translateY(-1px); }
+.crew-area-btn svg { width: 16px; height: 16px; }
+.crew-area-btn--ghost { background: transparent; color: var(--crew-white); border: 1px solid rgba(255,255,255,.4); }
+.crew-area-btn[hidden] { display: none; }
+@media (max-width: 640px) {
+    .crew-areanav__link { padding: .65rem .9rem; }
+}
