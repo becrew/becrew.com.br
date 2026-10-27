@@ -208,11 +208,11 @@ check "pagina: as plataformas continuam com os 3 cartões" "$(echo "$pt" | grep 
 rm -f "$TMP"/assets/php/data/rl-area*.json
 mock_reset
 r=""; for i in $(seq 1 61); do r="$r $(code_as a "$A?acao=entregas")"; done
-check "limite: usuário A, 60 leituras ok e a 61ª → 429" "$(echo "$r" | tr ' ' '\n' | sort | uniq -c | tr -s ' ' | tr '\n' ' ')" " 1 429 60 200 "
+check "limite: usuário A, 60 leituras ok e a 61ª → 429" "$(echo "$r" | tr ' ' '\n' | grep -c '^200$')/$(echo "$r" | tr ' ' '\n' | grep -c '^429$')" "60/1"
 check "limite: outro usuário no mesmo IP continua com o limite dele (200)" "$(code_as b "$A?acao=entregas")" "200"
 check "limite: o 429 traz Retry-After" "$(curl -s -D - -o /dev/null -b "$TMP/jar-a" "$A?acao=entregas" | tr -d '\r' | grep -ci '^retry-after:')" "1"
 r=""; for i in $(seq 1 21); do r="$r $(decidir_code b '{"tarefa":"tarefa-b1","tipo":"arte","versao":1,"decisao":"aprovada"}')"; done
-check "limite: usuário B, 20 decisões ok e a 21ª → 429" "$(echo "$r" | tr ' ' '\n' | sort | uniq -c | tr -s ' ' | tr '\n' ' ')" " 1 429 20 200 "
+check "limite: usuário B, 20 decisões ok e a 21ª → 429" "$(echo "$r" | tr ' ' '\n' | grep -c '^200$')/$(echo "$r" | tr ' ' '\n' | grep -c '^429$')" "20/1"
 check "limite: usuário A ainda pode decidir (limite próprio, mesmo IP)" "$(decidir_code a '{"tarefa":"tarefa-a1","tipo":"tema","versao":1,"decisao":"aprovada"}')" "200"
 check "limite: o e-mail do login não aparece nos contadores" "$(grep -rl -e 'a@example.com' -e 'b@example.com' "$TMP/assets/php/data" 2>/dev/null | wc -l | tr -d ' ')" "0"
 check "limite: o limite por usuário e o por IP existem (dois contadores por rota)" "$(ls "$TMP"/assets/php/data | grep -c '^rl-area')" "4"

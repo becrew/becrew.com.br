@@ -4,7 +4,7 @@
  * Rodar: php tests/area_test.php
  */
 define('CREW_AUTH', true);
-require __DIR__ . '/../assets/php/area/plataforma.php';
+require_once __DIR__ . '/../assets/php/area/plataforma.php';
 
 $fails = 0;
 $total = 0;
@@ -16,10 +16,10 @@ function check($label, $ok) {
 }
 
 // --- código da empresa ---
-check('empresa: EMP-0001 vale', crew_area_empresa_valida('EMP-0001'));
-check('empresa: EMP-123456 vale', crew_area_empresa_valida('EMP-123456'));
+check('empresa: EMP-0001 vale', crew_empresa_valida('EMP-0001'));
+check('empresa: EMP-123456 vale', crew_empresa_valida('EMP-123456'));
 foreach (['EMP-1', 'emp-0001', 'EMP-00A1', '', 'EMP-0001 ', "EMP-0001\n", null, 1234, ['EMP-0001']] as $ruim) {
-    check('empresa: inválida ' . json_encode($ruim), !crew_area_empresa_valida($ruim));
+    check('empresa: inválida ' . json_encode($ruim), !crew_empresa_valida($ruim));
 }
 
 // --- arquivo do token ---
@@ -33,11 +33,11 @@ $c = crew_area_ler_config($f);
 check('config: lê url (sem barra no fim) e token', $c === ['url' => 'https://crm.exemplo.test', 'token' => 'crewsite_abc123']);
 unlink($f);
 check('config: arquivo ausente → null', crew_area_ler_config('/nao/existe/crew-plataforma.php') === null);
-$f = arquivo_config("<?php return ['url' => 'http://crm.exemplo.test', 'token' => 'crewsite_abc'];");
+$f = arquivo_config("<?php return ['url' => 'http://crm.exemplo.test', 'token' => 'crewsite_abc123'];");
 check('config: url sem https → null', crew_area_ler_config($f) === null);
 check('config: http em 127.0.0.1 só com permissão de teste', crew_area_ler_config($f, true) === null);
 unlink($f);
-$f = arquivo_config("<?php return ['url' => 'http://127.0.0.1:8799', 'token' => 'crewsite_abc'];");
+$f = arquivo_config("<?php return ['url' => 'http://127.0.0.1:8799', 'token' => 'crewsite_abc123'];");
 check('config: http://127.0.0.1 sem permissão de teste → null', crew_area_ler_config($f) === null);
 check('config: http://127.0.0.1 com permissão de teste vale', crew_area_ler_config($f, true) !== null);
 unlink($f);
@@ -108,7 +108,6 @@ check('decisão: empresa inválida na sessão é recusada', crew_area_montar_dec
 check('decisão: e-mail inválido na sessão é recusado', crew_area_montar_decisao($base, 'EMP-0001', 'nao-e-email', $agora) === null);
 
 // --- perfil do login (auth.php) ---
-require __DIR__ . '/../assets/php/auth.php';
 check('perfil: empresa válida sai', crew_profile_from(['hash' => 'x', 'empresa' => 'EMP-0007'], 'a@b.com') === ['email' => 'a@b.com', 'empresa' => 'EMP-0007']);
 check('perfil: sem empresa → empresa null', crew_profile_from(['hash' => 'x'], 'a@b.com') === ['email' => 'a@b.com', 'empresa' => null]);
 check('perfil: empresa fora do formato → null', crew_profile_from(['hash' => 'x', 'empresa' => 'qualquer'], 'a@b.com') === ['email' => 'a@b.com', 'empresa' => null]);
