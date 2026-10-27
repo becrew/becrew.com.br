@@ -1,6 +1,6 @@
 # Plano: nova área do cliente, fase 1 (lado do site)
 
-Status: **aguardando revisão do Co-CEO e OK de Rafael. Nenhum código escrito.**
+Status: **aprovado por Rafael em 2026-10-26, com uma mudança (limite de uso por usuário logado e por IP, escolha 5). Parecer do Co-CEO conferido. Código em andamento.**
 Escopo: menu, Início, Entregas, Plataformas e a ponte com a API da Plataforma. Relatórios, Produtos e pontuação (fases 2 a 4) ficam de fora.
 
 ## O que entendi
@@ -61,7 +61,7 @@ Quase tudo vai no repositório **público** (`becrew.com.br`): são páginas, in
 - A `empresa` vem só de `crew_current_profile()`; qualquer `empresa` no corpo ou na URL é ignorada. O `por` é o e-mail do login; o `em` é `gmdate('c')` do servidor do site. Nenhum dos dois vem do navegador.
 - Só os campos conhecidos passam, com tamanhos limpos (motivos: até 8 de 80 caracteres; sugestão: até 1000; corpo: até 16 KB). `ajuste` sem motivo e sem sugestão é recusado já na ponte.
 - Fecha a sessão (`session_write_close()`) antes de chamar a Plataforma, para uma chamada lenta não travar as outras abas.
-- Limite de uso por IP com o `ratelimit.php` que já existe: **leitura 60/min, decisão 20/min** (a Plataforma aceita 300/min no total, somando todos os clientes).
+- Limite de uso **por usuário logado e por IP**, com o `ratelimit.php` que já existe: **leitura 60/min, decisão 20/min** para cada um dos dois; passou de qualquer um, 429. A chave do usuário é o hash (com o sal do `ratelimit.php`) do e-mail do login: o e-mail nunca aparece no nome nem no conteúdo do arquivo de contadores. Motivo: o IP real do visitante atrás da CDN da Hostinger ainda não foi confirmado; se o servidor enxergar o IP da CDN, só o limite por IP faria todos os clientes dividirem um limite. A Plataforma aceita 300/min no total.
 - Log só com status e código da empresa. Nunca e-mail, texto do cliente, token nem conteúdo da entrega.
 
 **Como a ponte lê o token:** `require` do arquivo `crew-plataforma.php` um nível acima de `public_html` (`dirname(__DIR__, 4)` a partir de `assets/php/area/`). Ele devolve `['url' => ..., 'token' => ...]`. A ponte confere que `url` é `https://` e que o `token` começa com `crewsite_`, e manda `Authorization: Bearer` só nessa chamada. O token nunca vai ao navegador, ao HTML, a log nem a mensagem de erro. Para teste local, a variável de ambiente `CREW_PLATAFORMA_CONFIG` aponta para outro arquivo (e só nesse caso aceita `http://127.0.0.1`); no servidor ela não existe.
@@ -84,7 +84,7 @@ Quase tudo vai no repositório **público** (`becrew.com.br`): são páginas, in
 6. POST válido: a Plataforma recebeu `empresa` da sessão (ignorando a do corpo), `por` = e-mail do login e `Authorization` correto; a resposta ao navegador não contém o token.
 7. Decisão numa tarefa de outra empresa → 404; decisão repetida → 200 `repetida`; versão velha → 409 repassado; 3º pedido de ajuste → 409 `limite_de_ajustes` repassado.
 8. Plataforma fora do ar, 500 ou config ausente → 502 genérico, sem vazar caminho nem token.
-9. Limite de uso: passado o limite, 429.
+9. Limite de uso: passado o limite, 429; dois usuários diferentes **do mesmo IP** têm cada um o seu limite (um estoura e leva 429, o outro continua com 200); o contador não guarda o e-mail em claro.
 10. Páginas logadas: usuário com empresa vê Entregas no menu; usuário sem empresa só vê Plataformas, e `painel.php`/`entregas.php` o redirecionam.
 11. `.htaccess` tem a regra de bloqueio da pasta da ponte com a exceção do `api.php` (conferência de texto, porque o servidor do PHP não lê `.htaccess`; o bloqueio real eu confiro com `curl` no ar depois do merge).
 
@@ -99,7 +99,7 @@ Quase tudo vai no repositório **público** (`becrew.com.br`): são páginas, in
 2. **Relatórios e Produtos:** abas desligadas com "em breve", sem página.
 3. **`painel-cliente.html` sai:** o conteúdo vira layout + `plataformas.php`. Um arquivo a menos para manter.
 4. **Origin obrigatório** (mais rígido que o exemplo da Plataforma e que a Loopy, que aceitam sem Origin), comparado por host e porta, sem exigir `https` (para testar em `localhost`).
-5. **Limites por IP:** 60 leituras e 20 decisões por minuto.
+5. **Limites por usuário logado e por IP** (mudança aprovada por Rafael): 60 leituras e 20 decisões por minuto, para cada um.
 6. **Atualização da tela:** busca de novo a cada 60 s só com a aba visível e ao voltar para a aba; nunca depois de uma decisão (usa a resposta dela).
 7. **Textos de motivo genéricos** ("Tema não combina com a minha marca"), já que a Loopy tinha textos do cliente dela.
 8. **Cada entrega aparece uma vez**, ordenada da mais antiga para a mais nova como a API entrega, agrupada por semana; sem data vai para "Sem data".
