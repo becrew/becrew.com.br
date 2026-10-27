@@ -1,6 +1,6 @@
 # Publica o site no Hostinger (domains/becrew.com.br/public_html) a cada push na branch main.
 # Envia só os arquivos que mudaram. Arquivos que existem apenas no servidor
-# (loopy/, assets/php/users.php, assets/php/data/) não são tocados.
+# (loopy/, assets/php/users.php, assets/php/data/, crew-plataforma.php acima do public_html) não são tocados.
 name: Deploy no Hostinger
 
 on:
@@ -32,6 +32,7 @@ jobs:
             **/.git*/**
             .github/**
             tests/**
+            docs/**
             README.md
             assets/php/users.example.php
             loopy/**

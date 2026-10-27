@@ -99,7 +99,7 @@ Quase tudo vai no repositório **público** (`becrew.com.br`): são páginas, in
 2. **Relatórios e Produtos:** abas desligadas com "em breve", sem página.
 3. **`painel-cliente.html` sai:** o conteúdo vira layout + `plataformas.php`. Um arquivo a menos para manter.
 4. **Origin obrigatório** (mais rígido que o exemplo da Plataforma e que a Loopy, que aceitam sem Origin), comparado por host e porta, sem exigir `https` (para testar em `localhost`).
-5. **Limites por usuário logado e por IP** (mudança aprovada por Rafael): 60 leituras e 20 decisões por minuto, para cada um.
+5. **Limites por usuário logado e por IP** (mudança aprovada por Rafael): 60 leituras e 20 decisões por minuto por usuário. **Ajuste na implementação:** o limite por IP é 3× o do usuário (180 leituras e 60 decisões por minuto), como rede de segurança. Com o mesmo número nos dois, dois usuários do mesmo IP dividiriam o limite e o teste "cada um tem o seu" não seria possível. O limite individual de cada pessoa continua 60 e 20.
 6. **Atualização da tela:** busca de novo a cada 60 s só com a aba visível e ao voltar para a aba; nunca depois de uma decisão (usa a resposta dela).
 7. **Textos de motivo genéricos** ("Tema não combina com a minha marca"), já que a Loopy tinha textos do cliente dela.
 8. **Cada entrega aparece uma vez**, ordenada da mais antiga para a mais nova como a API entrega, agrupada por semana; sem data vai para "Sem data".
