@@ -1,0 +1,95 @@
+/* Crew - Produtos da área do cliente: vitrine em grade (estilo loja) com abas de categoria (as frentes do CRM), no tema claro da casca (cores em crew-app.css). */
+.prod-barra { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+.prod-barra__conta { margin: 0; font-size: 14px; color: var(--app-muted); }
+.prod-barra__conta strong { color: var(--app-text); }
+
+.prod-grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.1rem; }
+.prod-card {
+    display: flex; flex-direction: column; overflow: hidden;
+    border-radius: var(--app-radius); background: var(--app-surface);
+    border: 1px solid var(--app-line); box-shadow: var(--app-shadow);
+    transition: box-shadow .2s ease, transform .2s ease, border-color .2s ease;
+}
+.prod-card[hidden] { display: none; }
+.prod-card:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(17,17,19,.08); border-color: var(--app-line-2); }
+
+.prod-card__foto { position: relative; aspect-ratio: 4 / 3; background: var(--app-surface-2); border-bottom: 3px solid rgb(var(--prod-cor)); }
+.prod-card__foto img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.prod-card__tipo {
+    position: absolute; left: .75rem; top: .75rem;
+    display: inline-flex; align-items: center; gap: .4rem;
+    padding: .35rem .6rem; border-radius: 999px;
+    background: rgba(255,255,255,.92); color: var(--app-text);
+    font: 600 11px/1 var(--font-body); box-shadow: 0 1px 4px rgba(0,0,0,.12);
+}
+.prod-card__tipo svg { width: 13px; height: 13px; }
+
+.prod-card__corpo { flex: 1; display: flex; flex-direction: column; gap: .6rem; padding: 1.1rem 1.15rem 1.15rem; }
+.prod-card__nome { margin: 0; padding: 0; border: 0; font: 700 1.1rem/1.2 var(--font-display); letter-spacing: .01em; color: var(--app-text); }
+.prod-card__texto { margin: 0; flex: 1; font-size: 14px; line-height: 1.5; color: var(--app-muted); }
+.prod-card__texto strong { color: var(--app-text); }
+.prod-card__pe { display: flex; align-items: center; justify-content: space-between; gap: .75rem; flex-wrap: wrap; padding-top: .85rem; margin-top: .25rem; border-top: 1px solid var(--app-line); }
+.prod-card__pe .crew-area-btn { margin-top: 0; }
+
+.prod-status { display: inline-flex; align-items: center; gap: .35rem; font: 600 12px/1 var(--font-body); color: var(--app-faint); }
+.prod-status svg { width: 14px; height: 14px; }
+.prod-status.is-ativo { color: var(--st-ok); }
+
+.prod-vazio { margin: 0; color: var(--app-muted); font-size: 14px; }
+.prod-vazio[hidden] { display: none; }
+@media (prefers-reduced-motion: reduce) { .prod-card, .prod-card:hover { transition: none; transform: none; } }
+
+/* ---- Categorias: as frentes do CRM, com as cores de lá (Consultoria ainda não tem cor no CRM) ---- */
+.prod-cats, .prod-card { --cat-cor: var(--app-text); }
+[data-prod-cat="gaming"], [data-cat="gaming"] { --cat-cor: #D0201A; }
+[data-prod-cat="agencia"], [data-cat="agencia"] { --cat-cor: #111111; }
+[data-prod-cat="consultoria"], [data-cat="consultoria"] { --cat-cor: #7A4DFF; }
+[data-prod-cat="tech"], [data-cat="tech"] { --cat-cor: #1F5BFF; }
+
+.prod-cats { display: flex; gap: .25rem; overflow-x: auto; scrollbar-width: none; border-bottom: 1px solid var(--app-line); }
+.prod-cats::-webkit-scrollbar { display: none; }
+.prod-cat {
+    flex: 0 0 auto; display: inline-flex; align-items: center; gap: .5rem;
+    padding: .75rem .9rem; margin-bottom: -1px;
+    background: transparent; border: 0; border-bottom: 2px solid transparent; cursor: pointer;
+    font: 700 12px/1 var(--font-body); letter-spacing: .08em; text-transform: uppercase; color: var(--app-faint);
+    transition: color .15s ease, border-color .15s ease;
+}
+.prod-cat svg { width: 15px; height: 15px; }
+.prod-cat b { min-width: 20px; padding: .2rem .4rem; border-radius: 999px; background: var(--app-surface-2); color: var(--app-muted); font-size: 11px; letter-spacing: 0; text-align: center; font-variant-numeric: tabular-nums; }
+.prod-cat:hover { color: var(--app-text); }
+.prod-cat.is-ativo { color: var(--cat-cor); border-bottom-color: var(--cat-cor); }
+.prod-cat.is-ativo b { background: var(--cat-cor); color: #fff; }
+
+.prod-card__cat { align-self: flex-start; display: inline-flex; align-items: center; gap: .4rem; font: 700 11px/1 var(--font-body); letter-spacing: .12em; text-transform: uppercase; color: var(--cat-cor); }
+.prod-card__cat::before { content: ""; width: 7px; height: 7px; border-radius: 999px; background: var(--cat-cor); }
+
+/* XP de cada produto, sobre a foto (ganho = já contratado) */
+.prod-card__xp {
+    position: absolute; right: .75rem; top: .75rem;
+    display: inline-flex; align-items: center; gap: .3rem;
+    padding: .35rem .6rem; border-radius: 999px;
+    background: #111113; color: #fff; font: 700 11px/1 var(--font-body); box-shadow: 0 1px 4px rgba(0,0,0,.2);
+}
+.prod-card__xp svg { width: 12px; height: 12px; color: #f0a92c; }
+.prod-card__xp.is-ganho { background: var(--st-ok); }
+.prod-card__xp.is-ganho svg { color: #fff; }
+
+/* Capa sem foto (produtos de parceiros): a cor do produto com o ícone e o nome */
+.prod-card__foto.is-marca {
+    display: flex; align-items: center; justify-content: center;
+    background:
+        radial-gradient(120% 90% at 20% 10%, rgb(255 255 255 / .22), transparent 55%),
+        linear-gradient(135deg, rgb(var(--prod-cor)), rgb(var(--prod-cor) / .72));
+}
+.prod-card__marca { display: flex; flex-direction: column; align-items: center; gap: .75rem; color: #fff; text-align: center; }
+.prod-card__marca svg { width: 56px; height: 56px; stroke-width: 1.6; }
+.prod-card__marca span { font: 700 1.25rem/1 var(--font-display); letter-spacing: .06em; }
+
+/* Em breve: ainda não está à venda (sem botão de contratar) */
+.prod-card.is-breve .prod-card__foto img, .prod-card.is-breve .prod-card__marca { filter: saturate(.55); opacity: .75; }
+.prod-card.is-breve .prod-card__foto { background: #fff; }
+.prod-card__xp.is-breve { background: var(--app-surface); color: var(--app-text); }
+.prod-card__xp.is-breve svg { color: var(--app-muted); }
+.prod-card__xpbreve { display: inline-flex; align-items: center; gap: .3rem; padding: .45rem .7rem; border-radius: 10px; background: var(--app-surface-2); color: var(--app-muted); font: 600 12px/1 var(--font-body); }
+.prod-card__xpbreve svg { width: 13px; height: 13px; }
