@@ -1,3 +1,61 @@
+<?php
+/**
+ * Crew - topo, menu e rodapé da área logada do cliente (Início, Entregas, Plataformas).
+ * Só a área logada usa este arquivo; o resto do site não muda. Cada página faz:
+ *   require auth.php; require area/layout.php;
+ *   $perfil = crew_area_exigir_login();           // porta de login (e de empresa)
+ *   crew_area_abrir('entregas', $perfil, [...]);  // topo + menu
+ *   ... conteúdo ...
+ *   crew_area_fechar(['area'], ['assets/js/crew-area.js']);
+ */
+if (!defined('CREW_AUTH')) { http_response_code(404); exit; }
+require_once __DIR__ . '/../auth.php';
+
+/* Caminho do arquivo com ?v=<hash do conteúdo>, para o navegador pegar a versão nova depois de uma mudança. */
+function crew_area_asset(string $rel): string {
+    $f = dirname(__DIR__, 3) . '/' . $rel;
+    return $rel . '?v=' . (is_file($f) ? substr(md5_file($f), 0, 8) : '0');
+}
+
+/**
+ * Porta de login das páginas da área. Sem login: volta ao login (303). Usuário sem empresa só vê Plataformas:
+ * nas demais páginas ($exigirEmpresa) vai para plataformas.php. Devolve o perfil ['email', 'empresa'].
+ */
+function crew_area_exigir_login(bool $exigirEmpresa = true): array {
+    $perfil = crew_current_profile();
+    if (!$perfil) {
+        header('Location: area-do-cliente.html', true, 303);
+        exit;
+    }
+    if ($exigirEmpresa && $perfil['empresa'] === null) {
+        header('Location: plataformas.php', true, 303);
+        exit;
+    }
+    header('Content-Type: text/html; charset=utf-8');
+    header('Cache-Control: no-store, private');
+    header('X-Robots-Tag: noindex, nofollow');
+    return $perfil;
+}
+
+/* Abre a página: <head>, topo, barra lateral, painel do menu do site, título e o menu da área. $ativo: inicio, entregas ou plataformas. */
+function crew_area_abrir(string $ativo, array $perfil, array $css = []): void {
+    $paginas = [
+        'inicio' => 'Início',
+        'entregas' => 'Entregas',
+        'plataformas' => 'Suas plataformas',
+    ];
+    $titulo = $paginas[$ativo] ?? 'Área do cliente';
+    $chaveTitulo = 'area.' . $ativo;
+    $temEmpresa = $perfil['empresa'] !== null;
+    $abas = [];
+    if ($temEmpresa) {
+        $abas[] = ['inicio', 'painel.php', 'Início', 'home'];
+        $abas[] = ['entregas', 'entregas.php', 'Entregas', 'calendar'];
+        $abas[] = ['relatorios', null, 'Relatórios', 'file-text'];
+        $abas[] = ['produtos', null, 'Produtos', 'package'];
+    }
+    $abas[] = ['plataformas', 'plataformas.php', 'Plataformas', 'layout-grid'];
+?>
 <!DOCTYPE html>
 
 <html lang="pt-BR">
@@ -13,7 +71,7 @@
 </script>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
-<title data-i18n="painel.meta.title">Suas plataformas | Crew</title>
+<title data-i18n="<?= $chaveTitulo ?>.meta"><?= htmlspecialchars($titulo) ?> | Crew</title>
 <!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,45 +81,12 @@
   <link rel="icon" href="/assets/img/crew-icon-192.png" type="image/png" sizes="192x192">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <!-- Icons (Lucide) -->
-<meta content="Área do cliente da Crew: acesse as plataformas da sua marca." name="description" data-i18n-attr="content:painel.meta.description">
-<meta name="robots" content="noindex, nofollow"><link href="assets/css/main.css?v=1c180f05" rel="stylesheet">
-<link href="assets/css/crew.css?v=f59b16a9" rel="stylesheet">
-<link href="assets/css/crew-painel.css?v=7f5a3c10" rel="stylesheet">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<link rel="canonical" href="https://becrew.com.br/painel-cliente.html" data-crew-seo>
-<meta property="og:type" content="website" data-crew-seo>
-<meta property="og:site_name" content="Crew" data-crew-seo>
-<meta property="og:locale" content="pt_BR" data-crew-seo>
-<meta property="og:locale:alternate" content="en_US" data-crew-seo>
-<meta property="og:title" content="Suas plataformas | Crew" data-crew-seo>
-<meta property="og:description" content="Área do cliente da Crew: acesse as plataformas da sua marca." data-crew-seo>
-<meta property="og:url" content="https://becrew.com.br/painel-cliente.html" data-crew-seo>
-<meta property="og:image" content="https://becrew.com.br/assets/img/og/home.jpg" data-crew-seo>
-<meta property="og:image:width" content="1200" data-crew-seo>
-<meta property="og:image:height" content="630" data-crew-seo>
-<meta name="twitter:card" content="summary_large_image" data-crew-seo>
-<meta name="twitter:title" content="Suas plataformas | Crew" data-crew-seo>
-<meta name="twitter:description" content="Área do cliente da Crew: acesse as plataformas da sua marca." data-crew-seo>
-<meta name="twitter:image" content="https://becrew.com.br/assets/img/og/home.jpg" data-crew-seo>
+<meta name="robots" content="noindex, nofollow"><link href="<?= crew_area_asset('assets/css/main.css') ?>" rel="stylesheet">
+<link href="<?= crew_area_asset('assets/css/crew.css') ?>" rel="stylesheet">
+<link href="<?= crew_area_asset('assets/css/crew-painel.css') ?>" rel="stylesheet">
+<?php foreach ($css as $c) { ?>
+<link href="<?= crew_area_asset($c) ?>" rel="stylesheet">
+<?php } ?>
 </head>
 <body class="relative h-[100dvh] w-full bg-brand-bg text-white tft-page-painel" id="page-top">
 <!-- ============================================== -->
@@ -216,78 +241,45 @@
 <!-- ============================================== -->
 <div class="absolute left-0 md:left-[140px] right-0 top-[70px] md:top-0 bottom-0 overflow-y-auto z-10 bg-brand-bg" id="main-scroll-container">
 
-<main class="crew-painel">
+<main class="crew-painel crew-area crew-area--<?= htmlspecialchars($ativo) ?>">
 <img alt="" class="crew-painel__photo" src="assets/img/sobre-fachada.webp" aria-hidden="true">
 <div class="crew-painel__shade" aria-hidden="true"></div>
 <header class="crew-painel__head">
 <div>
 <span class="crew-painel__kicker" data-i18n="painel.kicker">Área do cliente</span>
-<h1 class="crew-painel__title" data-i18n="painel.title">Suas plataformas</h1>
+<h1 class="crew-painel__title" data-i18n="<?= $chaveTitulo ?>.title"><?= htmlspecialchars($titulo) ?></h1>
 </div>
-<a class="crew-painel__logout" href="assets/php/logout.php"><i data-lucide="log-out"></i><span data-i18n="painel.logout">Sair</span></a>
 </header>
-<section class="crew-deck" aria-roledescription="carousel" aria-label="Plataformas" data-i18n-attr="aria-label:painel.deck">
-<div class="crew-deck__stage" tabindex="0">
-<article class="crew-deck__card is-themed" style="--deck-accent: 255 212 0; --deck-deep: 36 30 4; --deck-on: 28 22 0" data-index="0" aria-roledescription="slide" aria-label="01 / 03">
-<div class="crew-deck__top">
-<span class="crew-deck__icon"><i data-lucide="bar-chart"></i></span>
-<span class="crew-deck__num">01</span>
-</div>
-<h2 class="crew-deck__title" data-i18n="painel.speakr.title">SPEAKR.CREW</h2>
-<div class="crew-deck__media"><img alt="" src="assets/img/equipe-resultados.webp" draggable="false" loading="eager"></div>
-<p class="crew-deck__text" data-i18n="painel.speakr.text">Entre no <strong>Speakr</strong> e acompanhe os relatórios, as análises e as visões estratégicas do seu negócio.</p>
-<button type="button" class="crew-deck__cta is-soon" data-soon aria-describedby="alert-speakr"><span data-i18n="painel.access">Acessar</span><i data-lucide="arrow-up-right"></i></button>
-<div class="crew-deck__alert" id="alert-speakr" role="alert" hidden>
-<span class="crew-deck__alert-icon"><i data-lucide="lock"></i></span>
-<p data-i18n="painel.alert">Seu usuário não tem essa plataforma disponível. Quer saber mais? <a href="contato.html">Entre em contato com a nossa equipe.</a></p>
-<button type="button" class="crew-deck__alert-close" aria-label="Fechar aviso" data-i18n-attr="aria-label:painel.alert.close"><i data-lucide="x"></i></button>
-</div>
-</article>
-<article class="crew-deck__card is-themed is-ink-white" style="--deck-accent: 240 52 52; --deck-deep: 34 8 8; --deck-on: 24 4 4" data-index="1" aria-roledescription="slide" aria-label="02 / 03">
-<div class="crew-deck__top">
-<span class="crew-deck__icon"><i data-lucide="gamepad-2"></i></span>
-<span class="crew-deck__num">02</span>
-</div>
-<h2 class="crew-deck__title" data-i18n="painel.gaming.title">GAMING.CREW</h2>
-<div class="crew-deck__media"><img alt="" src="assets/img/painel-gaming.webp" draggable="false" loading="eager"></div>
-<p class="crew-deck__text" data-i18n="painel.gaming.text">Entre no <strong>Side Quest</strong> e acompanhe as missões, a comunidade gamer e os resultados das ações da sua marca.</p>
-<a class="crew-deck__cta" href="https://side-quest-drab-two.vercel.app/dashboard" target="_blank" rel="noopener noreferrer"><span data-i18n="painel.open">Acessar</span><i data-lucide="arrow-up-right"></i></a>
-</article>
-<article class="crew-deck__card is-themed" style="--deck-accent: 136 248 72; --deck-deep: 9 30 12; --deck-on: 6 20 10" data-index="2" aria-roledescription="slide" aria-label="03 / 03">
-<div class="crew-deck__top">
-<span class="crew-deck__icon"><i data-lucide="target"></i></span>
-<span class="crew-deck__num">03</span>
-</div>
-<h2 class="crew-deck__title" data-i18n="painel.ruller.title">RULLER.CREW</h2>
-<div class="crew-deck__media"><img alt="" src="assets/img/painel-ruller.webp" draggable="false" loading="eager"></div>
-<p class="crew-deck__text" data-i18n="painel.ruller.text">Entre no <strong>Ruller</strong> e acompanhe o planejamento, as entregas e os indicadores das suas campanhas.</p>
-<button type="button" class="crew-deck__cta is-soon" data-soon aria-describedby="alert-ruller"><span data-i18n="painel.access">Acessar</span><i data-lucide="arrow-up-right"></i></button>
-<div class="crew-deck__alert" id="alert-ruller" role="alert" hidden>
-<span class="crew-deck__alert-icon"><i data-lucide="lock"></i></span>
-<p data-i18n="painel.alert">Seu usuário não tem essa plataforma disponível. Quer saber mais? <a href="contato.html">Entre em contato com a nossa equipe.</a></p>
-<button type="button" class="crew-deck__alert-close" aria-label="Fechar aviso" data-i18n-attr="aria-label:painel.alert.close"><i data-lucide="x"></i></button>
-</div>
-</article>
-</div>
-<div class="crew-deck__controls">
-<button type="button" class="crew-deck__arrow" data-dir="-1" aria-label="Anterior" data-i18n-attr="aria-label:painel.prev"><i data-lucide="arrow-left"></i></button>
-<span class="crew-deck__counter" aria-live="polite"><strong data-deck-current>01</strong> / 03</span>
-<button type="button" class="crew-deck__arrow" data-dir="1" aria-label="Próxima" data-i18n-attr="aria-label:painel.next"><i data-lucide="arrow-right"></i></button>
-</div>
-<p class="crew-deck__hint" data-i18n="painel.hint">Arraste o cartão para o lado ou use as setas.</p>
-</section>
-<nav class="crew-deck__chips" aria-label="Todas as plataformas" data-i18n-attr="aria-label:painel.all">
-<button type="button" class="crew-deck__chip is-themed" style="--deck-accent: 255 212 0; --deck-on: 28 22 0" data-go="0"><i data-lucide="bar-chart"></i><span data-i18n="painel.speakr.title">SPEAKR.CREW</span></button>
-<button type="button" class="crew-deck__chip is-themed" style="--deck-accent: 240 52 52; --deck-on: 24 4 4" data-go="1"><i data-lucide="gamepad-2"></i><span data-i18n="painel.gaming.title">GAMING.CREW</span></button>
-<button type="button" class="crew-deck__chip is-themed" style="--deck-accent: 136 248 72; --deck-on: 6 20 10" data-go="2"><i data-lucide="target"></i><span data-i18n="painel.ruller.title">RULLER.CREW</span></button>
+<nav class="crew-areanav" aria-label="Área do cliente" data-i18n-attr="aria-label:area.nav.label">
+<?php foreach ($abas as [$chave, $href, $rotulo, $icone]) { ?>
+<?php if ($href === null) { ?>
+<span class="crew-areanav__link is-soon" aria-disabled="true"><i data-lucide="<?= $icone ?>"></i><span data-i18n="area.nav.<?= $chave ?>"><?= $rotulo ?></span><em data-i18n="area.nav.soon">em breve</em></span>
+<?php } else { ?>
+<a class="crew-areanav__link" href="<?= $href ?>"<?= $chave === $ativo ? ' aria-current="page"' : '' ?>><i data-lucide="<?= $icone ?>"></i><span data-i18n="area.nav.<?= $chave ?>"><?= $rotulo ?></span></a>
+<?php } ?>
+<?php } ?>
+<a class="crew-areanav__link crew-areanav__link--sair" href="assets/php/logout.php"><i data-lucide="log-out"></i><span data-i18n="painel.logout">Sair</span></a>
 </nav>
+<?php
+}
+
+/* Fecha a página e carrega os scripts: textos em inglês ($langs, de assets/js/lang/en/<nome>.js) e os scripts da página. */
+function crew_area_fechar(array $langs = [], array $js = []): void {
+?>
 </main>
 </div>
-<script src="assets/js/lucide-local.js?v=fe6a269e"></script>
-<script src="assets/js/lang/en/common.js?v=1486d569"></script>
-<script src="assets/js/lang/en/painel.js?v=d4c429e6"></script>
-<script src="assets/js/i18n.js?v=fb73a15c"></script>
-<script src="assets/js/crew-painel.js?v=176f58c1"></script>
-<script src="assets/js/main.js?v=69067647"></script>
+<script src="<?= crew_area_asset('assets/js/lucide-local.js') ?>"></script>
+<script src="<?= crew_area_asset('assets/js/lang/en/common.js') ?>"></script>
+<script src="<?= crew_area_asset('assets/js/lang/en/area.js') ?>"></script>
+<?php foreach ($langs as $l) { ?>
+<script src="<?= crew_area_asset('assets/js/lang/en/' . $l . '.js') ?>"></script>
+<?php } ?>
+<script src="<?= crew_area_asset('assets/js/i18n.js') ?>"></script>
+<?php foreach ($js as $s) { ?>
+<script src="<?= crew_area_asset($s) ?>"></script>
+<?php } ?>
+<script src="<?= crew_area_asset('assets/js/main.js') ?>"></script>
 </body>
 </html>
+<?php
+}

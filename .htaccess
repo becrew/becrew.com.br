@@ -1,12 +1,14 @@
 DirectoryIndex index.html index.php
 ErrorDocument 404 /404.html
 
-# Área do cliente: o painel só abre por painel.php (que confere o login).
-# O arquivo .html do painel e os arquivos internos de autenticação não podem ser abertos direto.
+# Área do cliente: as páginas (painel.php, entregas.php, plataformas.php) conferem o login.
+# O arquivo .html do painel antigo e os arquivos internos de autenticação não podem ser abertos direto.
+# Na pasta da ponte com a Plataforma só o api.php abre pelo navegador; o resto (layout, cliente da API) é include.
 <IfModule mod_rewrite.c>
 RewriteEngine On
 RewriteRule ^painel-cliente\.html$ - [F,L]
 RewriteRule ^assets/php/(users|auth|ratelimit)\.php$ - [F,L]
+RewriteRule ^assets/php/area/(?!api\.php$) - [F,L]
 # Contadores do limite de tentativas (gravados pelo PHP, nunca abertos pelo navegador).
 RewriteRule ^assets/php/data(/|$) - [F,L]
 
