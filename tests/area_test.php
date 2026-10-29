@@ -1,10 +1,11 @@
 <?php
 /**
- * Testes das funções da área do cliente (assets/php/area/plataforma.php e o perfil do login em auth.php).
+ * Testes das funções da área do cliente (assets/php/area/plataforma.php, a pontuação em produtos.php e o perfil do login em auth.php).
  * Rodar: php tests/area_test.php
  */
 define('CREW_AUTH', true);
 require_once __DIR__ . '/../assets/php/area/plataforma.php';
+require_once __DIR__ . '/../assets/php/area/produtos.php';
 
 $fails = 0;
 $total = 0;
@@ -117,7 +118,7 @@ $raiz = dirname(__DIR__);
 $dic = '';
 foreach (['common', 'area'] as $n) $dic .= file_get_contents("$raiz/assets/js/lang/en/$n.js");
 function tem_chave($dic, $k) { return strpos($dic, "'$k'") !== false; }
-foreach (['assets/php/area/layout.php', 'painel.php', 'entregas.php'] as $arq) {
+foreach (['assets/php/area/layout.php', 'painel.php', 'entregas.php', 'plataformas.php'] as $arq) {
     preg_match_all('/data-i18n="([^"<]+)"/', file_get_contents("$raiz/$arq"), $m);
     foreach (array_unique($m[1]) as $k) check("en: $arq usa '$k'", tem_chave($dic, $k));
 }
@@ -134,6 +135,18 @@ foreach (['tema', 'arte'] as $t) {
 foreach (['inicio', 'entregas', 'relatorios', 'produtos', 'plataformas', 'soon'] as $n) $dinamicas[] = "area.nav.$n";
 foreach (['inicio', 'entregas', 'plataformas'] as $n) { $dinamicas[] = "area.$n.meta"; $dinamicas[] = "area.$n.title"; }
 foreach ($dinamicas as $k) check("en: chave dinâmica '$k'", tem_chave($dic, $k));
+
+// --- pontos (XP) e níveis: cada produto contratado soma XP; o XP define o nível ---
+$p = fn($xp, $link) => ['xp' => $xp, 'link' => $link];
+check('xp: sem produto contratado → 0', crew_area_xp([$p(1000, null), $p(500, null)]) === 0);
+check('xp: soma só os contratados', crew_area_xp([$p(1000, 'https://a'), $p(500, null), $p(1500, 'https://b')]) === 2500);
+check('nível: 0 XP → Bronze, próximo Prata', ($n = crew_area_nivel(0))['atual'][0] === 'bronze' && $n['proximo'][0] === 'prata' && $n['falta'] === 1000 && $n['pct'] === 0);
+check('nível: exatamente o mínimo já sobe (1000 → Prata)', crew_area_nivel(1000)['atual'][0] === 'prata');
+check('nível: 1500 XP → Prata, faltam 1000 para Ouro, 33%', ($n = crew_area_nivel(1500))['atual'][0] === 'prata' && $n['falta'] === 1000 && $n['pct'] === 33);
+check('nível: no último não há próximo e a barra fica cheia', ($n = crew_area_nivel(99999))['proximo'] === null && $n['pct'] === 100 && $n['falta'] === 0);
+check('nível: os mínimos crescem e o primeiro é 0', (function () { $m = array_column(crew_area_niveis(), 2); $s = $m; sort($s); return $m[0] === 0 && $m === $s && count(array_unique($m)) === count($m); })());
+check('produtos: todo produto tem categoria conhecida e XP positivo', (function () { $c = crew_area_categorias(); foreach (crew_area_produtos() as $x) if (!isset($c[$x['categoria']]) || $x['xp'] <= 0) return false; return true; })());
+check('xp: número no formato brasileiro', crew_area_num(1500) === '1.500');
 
 // --- repositório público: nada de plano interno nem de caminho do servidor ---
 $readme = file_get_contents("$raiz/README.md");
