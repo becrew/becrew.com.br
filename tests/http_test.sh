@@ -193,7 +193,7 @@ check "area: com o arquivo de volta, a ponte volta a funcionar" "$(code_as a "$A
 pa="$(get_as a "http://127.0.0.1:$PORT/entregas.php")"
 check "pagina: entregas.php de quem tem empresa abre (200)" "$(code_as a "http://127.0.0.1:$PORT/entregas.php")" "200"
 check "pagina: o menu de quem tem empresa tem Entregas e Plataformas" "$(echo "$pa" | grep -c -e 'href="entregas.php"' -e 'href="plataformas.php"')" "2"
-check "pagina: Relatórios e Produtos aparecem como 'em breve', sem link" "$(echo "$pa" | grep -c -e 'relatorios.php' -e 'produtos.php')$(echo "$pa" | grep -o 'em breve' | wc -l | tr -d ' ')" "02"
+check "pagina: Relatórios e Produtos aparecem como 'em breve', sem link" "$(echo "$pa" | grep -c -e 'relatorios.php' -e 'produtos.php')$(echo "$pa" | grep -o 'data-i18n="area.nav.soon">em breve' | wc -l | tr -d ' ')" "02"
 check "pagina: o menu tem Sair (logout)" "$(echo "$pa" | grep -c 'assets/php/logout.php')" "1"
 check "pagina: painel.php (Início) abre para quem tem empresa" "$(code_as a "http://127.0.0.1:$PORT/painel.php")" "200"
 check "pagina: o token não aparece em nenhuma página" "$(echo "$pa" "$(get_as a "http://127.0.0.1:$PORT/painel.php")" | grep -c "$TOKEN")" "0"

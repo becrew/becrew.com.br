@@ -1,10 +1,19 @@
 <?php
 /**
  * Crew - catálogo de produtos da área do cliente e a pontuação (XP) que vem deles.
- * Cada produto contratado soma pontos de experiência; os pontos definem o nível do cliente e os benefícios.
+ * A empresa soma pontos de experiência; os pontos definem o nível. Benefícios por nível virão depois.
  * Usado pelo layout (pontos na barra de cima e na lateral), pelo Início e pela vitrine de Produtos.
  */
 if (!defined('CREW_AUTH')) { http_response_code(404); exit; }
+
+/*
+ * Etapa 1 dos pontos (decisão de Rafael, 2026-10-30): os níveis ficam à vista, mas o placar ainda não conta.
+ * CREW_AREA_PLACAR: XP da empresa, nível atual, barra, XP de cada produto e limites dos níveis. Liga quando os
+ *   pontos vierem da Plataforma, por empresa; a conta abaixo (crew_area_xp) ainda é a provisória do catálogo.
+ * CREW_AREA_BENEFICIOS: benefícios de cada nível. Liga quando Rafael decidir os benefícios.
+ */
+const CREW_AREA_PLACAR = false;
+const CREW_AREA_BENEFICIOS = false;
 
 /* Categorias, na ordem do CRM (as frentes). [chave => [rótulo PT, ícone]] */
 function crew_area_categorias(): array {
@@ -17,11 +26,10 @@ function crew_area_categorias(): array {
 }
 
 /*
- * Produtos. 'link' preenchido = contratado (botão Acessar); null = para contratar (botão leva ao contato).
+ * Produtos. 'link' = endereço do botão Acessar, para quando o produto estiver contratado (crew_area_contratado).
  * 'breve' => true = ainda não está à venda: aparece com "Em breve", sem botão de contratar.
  * 'xp' = pontos que o produto soma quando contratado. Os textos (nome, descrição) são os de painel.* em
  * assets/js/lang/en/painel.js; 'tipo' é a etiqueta sobre a foto.
- * Por enquanto o "contratado" é igual para todo cliente (como era no carrossel); o certo é vir da Plataforma.
  */
 function crew_area_produtos(): array {
     return [
@@ -50,7 +58,7 @@ function crew_area_produtos(): array {
 
 /*
  * Níveis por pontos: [chave, rótulo PT, XP mínimo, benefício PT].
- * Os benefícios são provisórios: precisam do OK de Rafael antes de ir para o ar.
+ * Os mínimos e os benefícios são provisórios: os mínimos se calibram com os pontos reais; os benefícios dependem de Rafael.
  */
 function crew_area_niveis(): array {
     return [
@@ -61,7 +69,15 @@ function crew_area_niveis(): array {
     ];
 }
 
-/* Pontos do cliente: a soma do XP dos produtos contratados. */
+/*
+ * Se a empresa tem o produto contratado. Vem da Plataforma, por empresa (etapa 3); até lá nenhum produto aparece
+ * como contratado, para nenhum cliente ver como seu um produto que não comprou.
+ */
+function crew_area_contratado(array $produto): bool {
+    return false;
+}
+
+/* Pontos do cliente: a soma do XP dos produtos com link (conta provisória, só vale com CREW_AREA_PLACAR). */
 function crew_area_xp(array $produtos): int {
     $xp = 0;
     foreach ($produtos as $p) if (($p['link'] ?? null) !== null) $xp += (int) $p['xp'];

@@ -60,8 +60,10 @@ function crew_area_abrir(string $ativo, array $perfil, array $css = []): void {
     }
     $abas[] = ['plataformas', 'plataformas.php', 'Plataformas', 'layout-grid'];
     $email = $perfil['email'];
-    $xp = crew_area_xp(crew_area_produtos());
-    $nivel = crew_area_nivel($xp);
+    if (CREW_AREA_PLACAR) {
+        $xp = crew_area_xp(crew_area_produtos());
+        $nivel = crew_area_nivel($xp);
+    }
 ?>
 <!DOCTYPE html>
 
@@ -115,6 +117,7 @@ function crew_area_abrir(string $ativo, array $perfil, array $css = []): void {
 </nav>
 <div class="app-side__foot">
 <a class="app-side__site" href="index.html"><i data-lucide="globe"></i><span data-i18n="area.site">Ir para o site</span><i data-lucide="arrow-up-right"></i></a>
+<?php if (CREW_AREA_PLACAR) { ?>
 <a class="app-nivel" href="plataformas.php#pontos" data-nivel="<?= $nivel['atual'][0] ?>">
 <span class="app-nivel__topo"><img class="app-nivel__selo" src="assets/img/niveis/<?= $nivel['atual'][0] ?>.png" alt="" width="32" height="32"><span class="app-nivel__nome"><span data-i18n="area.xp.nivel">Nível</span> <span data-i18n="area.nivel.<?= $nivel['atual'][0] ?>"><?= $nivel['atual'][1] ?></span></span><span class="app-nivel__xp"><?= crew_area_num($xp) ?> XP</span></span>
 <span class="app-nivel__barra" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="<?= $nivel['pct'] ?>"><span style="width: <?= $nivel['pct'] ?>%"></span></span>
@@ -124,6 +127,12 @@ function crew_area_abrir(string $ativo, array $perfil, array $css = []): void {
 <span class="app-nivel__falta" data-i18n="area.xp.maximo">Você está no nível máximo.</span>
 <?php } ?>
 </a>
+<?php } else { ?>
+<a class="app-nivel" href="plataformas.php#pontos" data-nivel>
+<span class="app-nivel__topo"><i data-lucide="award"></i><span class="app-nivel__nome" data-i18n="area.xp.niveis">Pontos e níveis</span></span>
+<span class="app-nivel__falta" data-i18n="area.xp.embreve">Seus pontos começam a contar em breve.</span>
+</a>
+<?php } ?>
 <div class="app-user">
 <span class="app-user__avatar" aria-hidden="true"><i data-lucide="user"></i></span>
 <span class="app-user__info">
@@ -142,7 +151,9 @@ function crew_area_abrir(string $ativo, array $perfil, array $css = []): void {
 <span class="app-top__crumb" data-i18n="painel.kicker">Área do cliente</span>
 <h1 class="app-top__h1" data-i18n="<?= $chaveTitulo ?>.title"><?= htmlspecialchars($titulo) ?></h1>
 </div>
+<?php if (CREW_AREA_PLACAR) { ?>
 <a class="app-xp" href="plataformas.php#pontos" data-nivel="<?= $nivel['atual'][0] ?>" title="Seus pontos de experiência" data-i18n-attr="title:area.xp.titulo"><img class="app-xp__selo" src="assets/img/niveis/<?= $nivel['atual'][0] ?>.png" alt="" width="20" height="20"><strong><?= crew_area_num($xp) ?></strong><span>XP</span><em data-i18n="area.nivel.<?= $nivel['atual'][0] ?>"><?= $nivel['atual'][1] ?></em></a>
+<?php } ?>
 <div class="crew-lang app-top__lang" role="group" aria-label="Idioma" data-i18n-attr="aria-label:lang.label">
 <button type="button" class="crew-lang__btn" data-lang-switch="pt">PT</button>
 <span class="crew-lang__sep"></span>

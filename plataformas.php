@@ -1,8 +1,8 @@
 <?php
 /**
  * Crew - Produtos: vitrine das plataformas da Crew, por categoria (as mesmas frentes do CRM: Gaming, Agência, Consultoria, Tech),
- * com o que o cliente já tem e o que pode contratar, e a pontuação: cada produto contratado soma XP, e o XP dá nível e benefícios.
- * O catálogo, os níveis e a conta dos pontos ficam em assets/php/area/produtos.php.
+ * com o que o cliente já tem e o que pode contratar, e a pontuação: a empresa soma XP, e o XP dá o nível.
+ * O catálogo, os níveis e a conta dos pontos ficam em assets/php/area/produtos.php (com o placar e os benefícios desligados na etapa 1).
  * Abre também para usuário sem empresa da área do cliente.
  * Só abre para quem entrou pela área do cliente (a porta de login e o menu ficam em assets/php/area/layout.php).
  */
@@ -12,12 +12,16 @@ $perfil = crew_area_exigir_login(false);
 
 $categorias = crew_area_categorias();
 $produtos = crew_area_produtos();
-$xp = crew_area_xp($produtos);
-$nivel = crew_area_nivel($xp);
+if (CREW_AREA_PLACAR) {
+    $xp = crew_area_xp($produtos);
+    $nivel = crew_area_nivel($xp);
+}
+$algumContratado = count(array_filter($produtos, 'crew_area_contratado')) > 0;
 
 crew_area_abrir('plataformas', $perfil, ['assets/css/crew-entregas.css', 'assets/css/crew-produtos.css']); // crew-entregas.css: os filtros (chips)
 ?>
-<section class="xp-painel" id="pontos" data-nivel="<?= $nivel['atual'][0] ?>" aria-labelledby="xp-titulo">
+<section class="xp-painel" id="pontos" data-nivel="<?= CREW_AREA_PLACAR ? $nivel['atual'][0] : '' ?>" aria-labelledby="xp-titulo">
+<?php if (CREW_AREA_PLACAR) { ?>
 <div class="xp-painel__resumo">
 <img class="xp-painel__selo" src="assets/img/niveis/<?= $nivel['atual'][0] ?>.png" alt="" width="48" height="48">
 <div class="xp-painel__info">
@@ -31,19 +35,32 @@ crew_area_abrir('plataformas', $perfil, ['assets/css/crew-entregas.css', 'assets
 <?php } ?>
 </div>
 </div>
+<?php } else { ?>
+<div class="xp-painel__resumo">
+<span class="xp-painel__icone"><i data-lucide="award"></i></span>
+<div class="xp-painel__info">
+<span class="xp-painel__kicker" data-i18n="area.xp.seus">Seus pontos de experiência</span>
+<h2 class="xp-painel__titulo" id="xp-titulo" data-i18n="area.xp.embreve">Seus pontos começam a contar em breve.</h2>
+</div>
+</div>
+<?php } ?>
 <div class="xp-painel__como">
 <h3 class="xp-painel__sub" data-i18n="area.xp.como.titulo">Como funciona</h3>
+<?php if (CREW_AREA_BENEFICIOS) { ?>
 <p data-i18n="area.xp.como.texto">Cada produto da Crew que a sua empresa contrata soma pontos de experiência (XP). <strong>Quanto mais pontos, mais alto o seu nível e mais benefícios você tem.</strong> Os benefícios de um nível continuam valendo nos níveis seguintes.</p>
+<?php } else { ?>
+<p data-i18n="area.xp.como.pontos">A sua empresa soma pontos de experiência (XP) com os produtos da Crew que contrata e com a parceria no dia a dia, como responder as entregas no prazo. <strong>Quanto mais pontos, mais alto o seu nível.</strong></p>
+<?php } ?>
 </div>
 <ol class="xp-niveis">
 <?php foreach (crew_area_niveis() as $i => [$chave, $rotulo, $min, $beneficio]) {
-    $estado = $i < $nivel['indice'] ? 'is-feito' : ($i === $nivel['indice'] ? 'is-atual' : 'is-bloqueado');
+    $estado = !CREW_AREA_PLACAR ? '' : ($i < $nivel['indice'] ? 'is-feito' : ($i === $nivel['indice'] ? 'is-atual' : 'is-bloqueado'));
 ?>
-<li class="xp-nivel <?= $estado ?>" data-nivel="<?= $chave ?>">
+<li class="xp-nivel<?= $estado !== '' ? ' ' . $estado : '' ?>" data-nivel="<?= $chave ?>">
 <span class="xp-nivel__icone"><img src="assets/img/niveis/<?= $chave ?>.png" alt="" width="56" height="56"><?php if ($estado === 'is-bloqueado') { ?><i data-lucide="lock"></i><?php } ?></span>
 <span class="xp-nivel__nome" data-i18n="area.nivel.<?= $chave ?>"><?= $rotulo ?></span>
-<span class="xp-nivel__min"><?= crew_area_num($min) ?> XP</span>
-<span class="xp-nivel__beneficio" data-i18n="area.nivel.<?= $chave ?>.beneficio"><?= $beneficio ?></span>
+<?php if (CREW_AREA_PLACAR) { ?><span class="xp-nivel__min"><?= crew_area_num($min) ?> XP</span><?php } ?>
+<?php if (CREW_AREA_BENEFICIOS) { ?><span class="xp-nivel__beneficio" data-i18n="area.nivel.<?= $chave ?>.beneficio"><?= $beneficio ?></span><?php } ?>
 <?php if ($estado === 'is-atual') { ?><em class="xp-nivel__voce" data-i18n="area.xp.voce">Você está aqui</em><?php } ?>
 </li>
 <?php } ?>
@@ -59,13 +76,15 @@ crew_area_abrir('plataformas', $perfil, ['assets/css/crew-entregas.css', 'assets
 <p class="prod-barra__conta"><strong data-prod-conta><?= count($produtos) ?></strong> <span data-i18n="area.prod.produtos">produtos</span></p>
 <div class="ent-chips" role="group" aria-label="Filtrar produtos" data-i18n-attr="aria-label:area.prod.filtrar">
 <button type="button" class="ent-chip is-ativo" data-prod-filtro="todos" aria-pressed="true"><span data-i18n="area.prod.todos">Todos</span></button>
+<?php if ($algumContratado) { ?>
 <button type="button" class="ent-chip" data-prod-filtro="ativo" aria-pressed="false"><span data-i18n="area.prod.ativos">Contratados</span></button>
+<?php } ?>
 <button type="button" class="ent-chip" data-prod-filtro="contratar" aria-pressed="false"><span data-i18n="area.prod.contratar.filtro">Para contratar</span></button>
 </div>
 </div>
 <section class="prod-grade" aria-label="Produtos" data-i18n-attr="aria-label:area.nav.plataformas">
 <?php foreach ($produtos as $p) {
-    $ativo = $p['link'] !== null;
+    $ativo = crew_area_contratado($p);
     $breve = !$ativo && !empty($p['breve']);
     $situacao = $ativo ? 'ativo' : ($breve ? 'breve' : 'contratar');
     [$catRotulo] = $categorias[$p['categoria']];
@@ -78,11 +97,11 @@ crew_area_abrir('plataformas', $perfil, ['assets/css/crew-entregas.css', 'assets
 <span class="prod-card__marca" aria-hidden="true"><i data-lucide="<?= $p['icone'] ?>"></i><span><?= $p['nome'] ?></span></span>
 <?php } ?>
 <span class="prod-card__tipo"><i data-lucide="<?= $p['tipo'][2] ?>"></i><span data-i18n="<?= $p['tipo'][0] ?>"><?= $p['tipo'][1] ?></span></span>
-<?php if ($ativo) { ?>
+<?php if ($ativo && CREW_AREA_PLACAR) { ?>
 <span class="prod-card__xp is-ganho"><i data-lucide="zap"></i><span><?= crew_area_num($p['xp']) ?> XP</span> <span data-i18n="area.xp.ganho">ganhos</span></span>
 <?php } elseif ($breve) { ?>
 <span class="prod-card__xp is-breve"><i data-lucide="clock"></i><span data-i18n="area.prod.breve">Em breve</span></span>
-<?php } else { ?>
+<?php } elseif (!$ativo && CREW_AREA_PLACAR) { ?>
 <span class="prod-card__xp"><i data-lucide="zap"></i><span>+<?= crew_area_num($p['xp']) ?> XP</span></span>
 <?php } ?>
 </div>
@@ -96,7 +115,7 @@ crew_area_abrir('plataformas', $perfil, ['assets/css/crew-entregas.css', 'assets
 <a class="crew-area-btn" href="<?= htmlspecialchars($p['link']) ?>" target="_blank" rel="noopener noreferrer"><span data-i18n="area.prod.acessar">Acessar</span><i data-lucide="arrow-up-right"></i></a>
 <?php } elseif ($breve) { ?>
 <span class="prod-status"><i data-lucide="clock"></i><span data-i18n="area.prod.breve.texto">Chega em breve</span></span>
-<span class="prod-card__xpbreve"><i data-lucide="zap"></i>+<?= crew_area_num($p['xp']) ?> XP</span>
+<?php if (CREW_AREA_PLACAR) { ?><span class="prod-card__xpbreve"><i data-lucide="zap"></i>+<?= crew_area_num($p['xp']) ?> XP</span><?php } ?>
 <?php } else { ?>
 <span class="prod-status"><i data-lucide="lock"></i><span data-i18n="area.prod.nao">Não contratado</span></span>
 <a class="crew-area-btn crew-area-btn--ghost" href="contato.html"><span data-i18n="area.prod.quero">Quero contratar</span><i data-lucide="arrow-right"></i></a>

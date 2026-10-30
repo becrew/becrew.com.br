@@ -148,6 +148,47 @@ check('nível: os mínimos crescem e o primeiro é 0', (function () { $m = array
 check('produtos: todo produto tem categoria conhecida e XP positivo', (function () { $c = crew_area_categorias(); foreach (crew_area_produtos() as $x) if (!isset($c[$x['categoria']]) || $x['xp'] <= 0) return false; return true; })());
 check('xp: número no formato brasileiro', crew_area_num(1500) === '1.500');
 
+// --- páginas logadas, etapa 1 dos pontos (decisão de Rafael, 2026-10-30): os níveis ficam à vista, mas sem placar
+// igual para todos, sem benefício e sem "Contratado" fixo. Cada página roda no PHP de linha de comando, numa cópia
+// temporária só com auth.php, area/ e as páginas, com um users.php de mentira (o real nunca é lido) ---
+function pagina_logada(string $pagina, string $email): string {
+    static $tmp = null;
+    $raiz = dirname(__DIR__);
+    if ($tmp === null) {
+        $tmp = sys_get_temp_dir() . '/crew-area-' . bin2hex(random_bytes(4));
+        mkdir("$tmp/assets/php/area", 0700, true);
+        mkdir("$tmp/sessoes", 0700);
+        foreach (['painel.php', 'entregas.php', 'plataformas.php', 'assets/php/auth.php'] as $f) copy("$raiz/$f", "$tmp/$f");
+        foreach (glob("$raiz/assets/php/area/*.php") as $f) copy($f, "$tmp/assets/php/area/" . basename($f));
+        file_put_contents("$tmp/assets/php/users.php", "<?php return ['a@example.com' => ['hash' => 'x', 'empresa' => 'EMP-0001'], 'teste@example.com' => ['hash' => 'x']];");
+        file_put_contents("$tmp/login.php", "<?php session_save_path(__DIR__ . '/sessoes'); session_start(); \$_SESSION['crew_user'] = getenv('CREW_TESTE_EMAIL');");
+        register_shutdown_function(function () use ($tmp) { exec('rm -rf ' . escapeshellarg($tmp)); });
+    }
+    $cmd = 'CREW_TESTE_EMAIL=' . escapeshellarg($email) . ' ' . escapeshellarg(PHP_BINARY)
+        . ' -d auto_prepend_file=' . escapeshellarg("$tmp/login.php") . ' ' . escapeshellarg("$tmp/$pagina") . ' 2>&1';
+    return (string) shell_exec($cmd);
+}
+$telas = [
+    'Início' => pagina_logada('painel.php', 'a@example.com'),
+    'Entregas' => pagina_logada('entregas.php', 'a@example.com'),
+    'Produtos' => pagina_logada('plataformas.php', 'a@example.com'),
+    'Produtos sem empresa' => pagina_logada('plataformas.php', 'teste@example.com'),
+];
+foreach ($telas as $nome => $html) {
+    check("tela $nome: abre (área logada)", strpos($html, 'app-nav') !== false && strpos($html, 'Fatal') === false && strpos($html, 'Warning') === false);
+    check("tela $nome: nenhum número de XP", preg_match('/\d[\d.]*\s*(<\/[a-z]+>\s*)*XP/', $html) === 0);
+    check("tela $nome: nenhum benefício de nível", strpos($html, 'beneficio') === false && count(array_filter(crew_area_niveis(), fn($n) => strpos($html, $n[3]) !== false)) === 0);
+    check("tela $nome: nenhum \"Contratado\" nem \"Acessar\"", strpos($html, 'Contratado') === false && strpos($html, 'area.prod.acessar') === false && strpos($html, 'side-quest') === false);
+    check("tela $nome: barra lateral leva aos níveis", strpos($html, 'href="plataformas.php#pontos"') !== false);
+}
+check('tela Início: faixa dos pontos avisa que a contagem começa em breve', strpos($telas['Início'], 'area.xp.embreve') !== false);
+foreach (['Produtos', 'Produtos sem empresa'] as $nome) {
+    check("tela $nome: mostra os quatro níveis", count(array_filter(crew_area_niveis(), fn($n) => strpos($telas[$nome], 'data-i18n="area.nivel.' . $n[0] . '"') !== false)) === 4);
+    check("tela $nome: painel avisa que a contagem começa em breve", strpos($telas[$nome], 'area.xp.embreve') !== false);
+    check("tela $nome: Gaming fica para contratar", preg_match('/class="prod-card is-contratar"[^>]*>(?:(?!<\/article>).)*GAMING\.CREW/s', $telas[$nome]) === 1);
+}
+check('produtos: o link do Side Quest continua no catálogo para voltar com o contratado da Plataforma', in_array('https://side-quest-drab-two.vercel.app/dashboard', array_column(crew_area_produtos(), 'link'), true));
+
 // --- repositório público: nada de plano interno nem de caminho do servidor ---
 $readme = file_get_contents("$raiz/README.md");
 check('público: README não traz o caminho do token no servidor', strpos($readme, 'domains/') === false);
