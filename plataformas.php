@@ -11,7 +11,7 @@ require __DIR__ . '/assets/php/area/layout.php';
 $perfil = crew_area_exigir_login(false);
 
 $categorias = crew_area_categorias();
-$produtos = crew_area_produtos();
+$produtos = array_values(array_filter(crew_area_produtos(), fn($p) => empty($p['oculto'])));
 if (CREW_AREA_PLACAR) {
     $xp = crew_area_xp($produtos);
     $nivel = crew_area_nivel($xp);
@@ -68,8 +68,8 @@ crew_area_abrir('plataformas', $perfil, ['assets/css/crew-entregas.css', 'assets
 </section>
 <nav class="prod-cats" aria-label="Categorias" data-i18n-attr="aria-label:area.prod.categorias">
 <button type="button" class="prod-cat is-ativo" data-prod-cat="todas" aria-pressed="true"><i data-lucide="layout-grid"></i><span data-i18n="area.prod.todas">Todas</span><b><?= count($produtos) ?></b></button>
-<?php foreach ($categorias as $c => [$rotulo, $icone]) { ?>
-<button type="button" class="prod-cat" data-prod-cat="<?= $c ?>" aria-pressed="false"><i data-lucide="<?= $icone ?>"></i><span data-i18n="area.prod.cat.<?= $c ?>"><?= $rotulo ?></span><b><?= count(array_filter($produtos, fn($p) => $p['categoria'] === $c)) ?></b></button>
+<?php foreach ($categorias as $c => [$rotulo, $icone]) { $n = count(array_filter($produtos, fn($p) => $p['categoria'] === $c)); if ($n === 0) continue; // aba sem produto à vista some ?>
+<button type="button" class="prod-cat" data-prod-cat="<?= $c ?>" aria-pressed="false"><i data-lucide="<?= $icone ?>"></i><span data-i18n="area.prod.cat.<?= $c ?>"><?= $rotulo ?></span><b><?= $n ?></b></button>
 <?php } ?>
 </nav>
 <div class="prod-barra">

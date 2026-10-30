@@ -191,7 +191,14 @@ foreach (['Produtos', 'Produtos sem empresa'] as $nome) {
 check('produtos: Speakr não está mais no catálogo', !in_array('speakr', array_column(crew_area_produtos(), 'chave'), true));
 check('categorias: só as frentes (gaming, agencia, tech)', array_keys(crew_area_categorias()) === ['gaming', 'agencia', 'tech']);
 foreach (['Produtos', 'Produtos sem empresa'] as $nome) check("tela $nome: sem Speakr nem Consultoria", stripos($telas[$nome], 'speakr') === false && stripos($telas[$nome], 'consultoria') === false);
-check('produtos: o link do Side Quest continua no catálogo para voltar com o contratado da Plataforma',in_array('https://side-quest-drab-two.vercel.app/dashboard', array_column(crew_area_produtos(), 'link'), true));
+// Ruller fica oculto enquanto a plataforma dele está em desenvolvimento (decisão de Rafael, 2026-10-30); a aba sem produto some.
+check('produtos: Ruller continua no catálogo, marcado como oculto', (array_column(crew_area_produtos(), null, 'chave')['ruller']['oculto'] ?? false) === true);
+foreach (['Produtos', 'Produtos sem empresa'] as $nome) {
+    check("tela $nome: sem o cartão do Ruller", strpos($telas[$nome], 'RULLER.CREW') === false);
+    check("tela $nome: sem a aba Agência (nenhum produto à vista)", strpos($telas[$nome], 'data-prod-cat="agencia"') === false);
+    check("tela $nome: abas do Gaming e da Tech", strpos($telas[$nome], 'data-prod-cat="gaming"') !== false && strpos($telas[$nome], 'data-prod-cat="tech"') !== false);
+}
+check('produtos: o link do Side Quest continua no catálogo para voltar com o contratado da Plataforma', in_array('https://side-quest-drab-two.vercel.app/dashboard', array_column(crew_area_produtos(), 'link'), true));
 
 // --- repositório público: nada de plano interno nem de caminho do servidor ---
 $readme = file_get_contents("$raiz/README.md");

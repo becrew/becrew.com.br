@@ -28,6 +28,7 @@ function crew_area_categorias(): array {
 /*
  * Produtos. 'link' = endereço do botão Acessar, para quando o produto estiver contratado (crew_area_contratado).
  * 'breve' => true = ainda não está à venda: aparece com "Em breve", sem botão de contratar.
+ * 'oculto' => true = fica fora da vitrine (a plataforma do produto ainda está em desenvolvimento).
  * 'xp' = pontos que o produto soma quando contratado. Os textos (nome, descrição) são os de painel.* em
  * assets/js/lang/en/painel.js; 'tipo' é a etiqueta sobre a foto.
  */
@@ -36,7 +37,8 @@ function crew_area_produtos(): array {
         ['chave' => 'gaming', 'nome' => 'GAMING.CREW', 'categoria' => 'gaming', 'cor' => '240 52 52', 'foto' => 'assets/img/painel-gaming.webp', 'xp' => 1500,
          'tipo' => ['area.prod.tipo.comunidade', 'Comunidade gamer', 'users'],
          'texto' => 'Entre no <strong>Side Quest</strong> e acompanhe as missões, a comunidade gamer e os resultados das ações da sua marca.', 'link' => 'https://side-quest-drab-two.vercel.app/dashboard'],
-        ['chave' => 'ruller', 'nome' => 'RULLER.CREW', 'categoria' => 'agencia', 'cor' => '136 248 72', 'foto' => 'assets/img/painel-ruller.webp', 'xp' => 1000,
+        ['chave' => 'ruller', 'nome' => 'RULLER.CREW', 'categoria' => 'agencia', 'oculto' => true, // plataforma em desenvolvimento (Rafael, 2026-10-30)
+         'cor' => '136 248 72', 'foto' => 'assets/img/painel-ruller.webp', 'xp' => 1000,
          'tipo' => ['area.prod.tipo.campanhas', 'Campanhas', 'target'],
          'texto' => 'Entre no <strong>Ruller</strong> e acompanhe o planejamento, as entregas e os indicadores das suas campanhas.', 'link' => null],
         // Tech: serviços de valor agregado para o provedor oferecer aos assinantes. Capa = logo da marca no fundo dela, 800x600, logo centralizado com a mesma largura.
