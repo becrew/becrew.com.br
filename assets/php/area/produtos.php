@@ -1,37 +1,44 @@
 <?php
 /**
  * Crew - catálogo de produtos da área do cliente e a pontuação (XP) que vem deles.
- * Cada produto contratado soma pontos de experiência; os pontos definem o nível do cliente e os benefícios.
+ * A empresa soma pontos de experiência; os pontos definem o nível. Benefícios por nível virão depois.
  * Usado pelo layout (pontos na barra de cima e na lateral), pelo Início e pela vitrine de Produtos.
  */
 if (!defined('CREW_AUTH')) { http_response_code(404); exit; }
 
-/* Categorias, na ordem do CRM (as frentes). [chave => [rótulo PT, ícone]] */
+/*
+ * Etapa 1 dos pontos (decisão de Rafael, 2026-10-30): os níveis ficam à vista, mas o placar ainda não conta.
+ * CREW_AREA_PLACAR: XP da empresa, nível atual, barra, XP de cada produto e limites dos níveis. Liga quando os
+ *   pontos vierem da Plataforma, por empresa; a conta abaixo (crew_area_xp) ainda é a provisória do catálogo.
+ *   Regra aprovada (Rafael, 2026-10-30): pontos = lucro bruto que a empresa gerou para a Crew, acumulado mês a mês.
+ * CREW_AREA_BENEFICIOS: benefícios de cada nível. Liga quando Rafael decidir os benefícios.
+ */
+const CREW_AREA_PLACAR = false;
+const CREW_AREA_BENEFICIOS = false;
+
+/* Categorias, na ordem do CRM (as frentes). [chave => [rótulo PT, ícone]]. O Speakr saiu da vitrine (vira a aba Relatórios), e com ele a Consultoria. */
 function crew_area_categorias(): array {
     return [
         'gaming' => ['Gaming', 'gamepad-2'],
         'agencia' => ['Agência', 'megaphone'],
-        'consultoria' => ['Consultoria', 'trending-up'],
         'tech' => ['Tech', 'cpu'],
     ];
 }
 
 /*
- * Produtos. 'link' preenchido = contratado (botão Acessar); null = para contratar (botão leva ao contato).
+ * Produtos. 'link' = endereço do botão Acessar, para quando o produto estiver contratado (crew_area_contratado).
  * 'breve' => true = ainda não está à venda: aparece com "Em breve", sem botão de contratar.
+ * 'oculto' => true = fica fora da vitrine (a plataforma do produto ainda está em desenvolvimento).
  * 'xp' = pontos que o produto soma quando contratado. Os textos (nome, descrição) são os de painel.* em
  * assets/js/lang/en/painel.js; 'tipo' é a etiqueta sobre a foto.
- * Por enquanto o "contratado" é igual para todo cliente (como era no carrossel); o certo é vir da Plataforma.
  */
 function crew_area_produtos(): array {
     return [
-        ['chave' => 'speakr', 'nome' => 'SPEAKR.CREW', 'categoria' => 'consultoria', 'cor' => '255 212 0', 'foto' => 'assets/img/equipe-resultados.webp', 'xp' => 1000,
-         'tipo' => ['area.prod.tipo.relatorios', 'Relatórios e análises', 'bar-chart'],
-         'texto' => 'Entre no <strong>Speakr</strong> e acompanhe os relatórios, as análises e as visões estratégicas do seu negócio.', 'link' => null],
         ['chave' => 'gaming', 'nome' => 'GAMING.CREW', 'categoria' => 'gaming', 'cor' => '240 52 52', 'foto' => 'assets/img/painel-gaming.webp', 'xp' => 1500,
          'tipo' => ['area.prod.tipo.comunidade', 'Comunidade gamer', 'users'],
          'texto' => 'Entre no <strong>Side Quest</strong> e acompanhe as missões, a comunidade gamer e os resultados das ações da sua marca.', 'link' => 'https://side-quest-drab-two.vercel.app/dashboard'],
-        ['chave' => 'ruller', 'nome' => 'RULLER.CREW', 'categoria' => 'agencia', 'cor' => '136 248 72', 'foto' => 'assets/img/painel-ruller.webp', 'xp' => 1000,
+        ['chave' => 'ruller', 'nome' => 'RULLER.CREW', 'categoria' => 'agencia', 'oculto' => true, // plataforma em desenvolvimento (Rafael, 2026-10-30)
+         'cor' => '136 248 72', 'foto' => 'assets/img/painel-ruller.webp', 'xp' => 1000,
          'tipo' => ['area.prod.tipo.campanhas', 'Campanhas', 'target'],
          'texto' => 'Entre no <strong>Ruller</strong> e acompanhe o planejamento, as entregas e os indicadores das suas campanhas.', 'link' => null],
         // Tech: serviços de valor agregado para o provedor oferecer aos assinantes. Capa = logo da marca no fundo dela, 800x600, logo centralizado com a mesma largura.
@@ -50,7 +57,7 @@ function crew_area_produtos(): array {
 
 /*
  * Níveis por pontos: [chave, rótulo PT, XP mínimo, benefício PT].
- * Os benefícios são provisórios: precisam do OK de Rafael antes de ir para o ar.
+ * Os mínimos e os benefícios são provisórios: os mínimos se calibram com os pontos reais; os benefícios dependem de Rafael.
  */
 function crew_area_niveis(): array {
     return [
@@ -61,7 +68,15 @@ function crew_area_niveis(): array {
     ];
 }
 
-/* Pontos do cliente: a soma do XP dos produtos contratados. */
+/*
+ * Se a empresa tem o produto contratado. Vem da Plataforma, por empresa (etapa 3); até lá nenhum produto aparece
+ * como contratado, para nenhum cliente ver como seu um produto que não comprou.
+ */
+function crew_area_contratado(array $produto): bool {
+    return false;
+}
+
+/* Pontos do cliente: a soma do XP dos produtos com link (conta provisória, só vale com CREW_AREA_PLACAR). */
 function crew_area_xp(array $produtos): int {
     $xp = 0;
     foreach ($produtos as $p) if (($p['link'] ?? null) !== null) $xp += (int) $p['xp'];

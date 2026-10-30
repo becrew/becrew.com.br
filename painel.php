@@ -31,7 +31,7 @@ crew_area_abrir('inicio', $perfil);
 <p class="app-stat__sub" data-i18n="area.inicio.entregue">Prontas e aprovadas</p>
 </div>
 </section>
-<?php $xp = crew_area_xp(crew_area_produtos()); $nivel = crew_area_nivel($xp); ?>
+<?php if (CREW_AREA_PLACAR) { $xp = crew_area_xp(crew_area_produtos()); $nivel = crew_area_nivel($xp); ?>
 <a class="xp-faixa" href="plataformas.php#pontos" data-nivel="<?= $nivel['atual'][0] ?>">
 <img class="xp-painel__selo" src="assets/img/niveis/<?= $nivel['atual'][0] ?>.png" alt="" width="48" height="48">
 <span class="xp-faixa__info">
@@ -41,6 +41,16 @@ crew_area_abrir('inicio', $perfil);
 <span class="app-nivel__barra xp-faixa__barra" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="<?= $nivel['pct'] ?>"><span style="width: <?= $nivel['pct'] ?>%"></span></span>
 <i data-lucide="arrow-right"></i>
 </a>
+<?php } else { ?>
+<a class="xp-faixa" href="plataformas.php#pontos" data-nivel>
+<i data-lucide="award"></i>
+<span class="xp-faixa__info">
+<span class="xp-faixa__titulo" data-i18n="area.xp.niveis">Pontos e níveis</span>
+<span class="xp-faixa__texto"><span data-i18n="area.xp.embreve">Seus pontos começam a contar em breve.</span> <span data-i18n="area.xp.faixa.ver">Veja como funciona.</span></span>
+</span>
+<i data-lucide="arrow-right"></i>
+</a>
+<?php } ?>
 <section class="app-panel">
 <div class="app-panel__head">
 <h2 class="app-panel__title" data-i18n="area.inicio.lista">Precisa da sua aprovação</h2>

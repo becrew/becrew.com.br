@@ -193,7 +193,7 @@ check "area: com o arquivo de volta, a ponte volta a funcionar" "$(code_as a "$A
 pa="$(get_as a "http://127.0.0.1:$PORT/entregas.php")"
 check "pagina: entregas.php de quem tem empresa abre (200)" "$(code_as a "http://127.0.0.1:$PORT/entregas.php")" "200"
 check "pagina: o menu de quem tem empresa tem Entregas e Plataformas" "$(echo "$pa" | grep -c -e 'href="entregas.php"' -e 'href="plataformas.php"')" "2"
-check "pagina: Relatórios e Produtos aparecem como 'em breve', sem link" "$(echo "$pa" | grep -c -e 'relatorios.php' -e 'produtos.php')$(echo "$pa" | grep -o 'em breve' | wc -l | tr -d ' ')" "02"
+check "pagina: Relatórios e Produtos aparecem como 'em breve', sem link" "$(echo "$pa" | grep -c -e 'relatorios.php' -e 'produtos.php')$(echo "$pa" | grep -o 'data-i18n="area.nav.soon">em breve' | wc -l | tr -d ' ')" "02"
 check "pagina: o menu tem Sair (logout)" "$(echo "$pa" | grep -c 'assets/php/logout.php')" "1"
 check "pagina: painel.php (Início) abre para quem tem empresa" "$(code_as a "http://127.0.0.1:$PORT/painel.php")" "200"
 check "pagina: o token não aparece em nenhuma página" "$(echo "$pa" "$(get_as a "http://127.0.0.1:$PORT/painel.php")" | grep -c "$TOKEN")" "0"
@@ -202,7 +202,7 @@ check "pagina: sem empresa, plataformas.php abre" "$(code_as teste "http://127.0
 check "pagina: sem empresa, o menu não tem Entregas" "$(echo "$pt" | grep -c 'href="entregas.php"')" "0"
 check "pagina: sem empresa, painel.php vai para plataformas.php" "$(curl -s -o /dev/null -w '%{http_code} %{redirect_url}' -b "$TMP/jar-teste" "http://127.0.0.1:$PORT/painel.php")" "303 http://127.0.0.1:$PORT/plataformas.php"
 check "pagina: sem empresa, entregas.php vai para plataformas.php" "$(curl -s -o /dev/null -w '%{http_code} %{redirect_url}' -b "$TMP/jar-teste" "http://127.0.0.1:$PORT/entregas.php")" "303 http://127.0.0.1:$PORT/plataformas.php"
-check "pagina: as plataformas continuam com os 3 cartões" "$(echo "$pt" | grep -o -e 'SPEAKR.CREW' -e 'GAMING.CREW' -e 'RULLER.CREW' | sort -u | wc -l | tr -d ' ')" "3"
+check "pagina: as plataformas mostram o Gaming e escondem o Ruller (em desenvolvimento)" "$(echo "$pt" | grep -c 'GAMING.CREW' | tr -d ' ' | sed 's/^[1-9][0-9]*$/sim/')-$(echo "$pt" | grep -c 'RULLER.CREW' | tr -d ' ')" "sim-0"
 
 # --- limite de uso: por usuário logado e por IP (o IP real atrás da CDN ainda não foi confirmado) ---
 rm -f "$TMP"/assets/php/data/rl-area*.json
