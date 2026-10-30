@@ -14,8 +14,6 @@ window.CREW_I18N = Object.assign(window.CREW_I18N || {}, {
   'painel.access': 'Access',
   'painel.alert': 'Your user does not have access to this platform. Want to know more? <a href="contato.html">Get in touch with our team.</a>',
   'painel.alert.close': 'Close notice',
-  'painel.speakr.title': 'SPEAKR.CREW',
-  'painel.speakr.text': 'Jump into <strong>Speakr</strong> and follow the reports, analyses and strategic views of your business.',
   'painel.gaming.title': 'GAMING.CREW',
   'painel.gaming.text': 'Jump into <strong>Side Quest</strong> and follow the quests, the gaming community and the results of your brand\'s activations.',
   'painel.ruller.title': 'RULLER.CREW',

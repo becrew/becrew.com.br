@@ -1,6 +1,6 @@
 <?php
 /**
- * Crew - Produtos: vitrine das plataformas da Crew, por categoria (as mesmas frentes do CRM: Gaming, Agência, Consultoria, Tech),
+ * Crew - Produtos: vitrine das plataformas da Crew, por categoria (as mesmas frentes do CRM: Gaming, Agência, Tech),
  * com o que o cliente já tem e o que pode contratar, e a pontuação: a empresa soma XP, e o XP dá o nível.
  * O catálogo, os níveis e a conta dos pontos ficam em assets/php/area/produtos.php (com o placar e os benefícios desligados na etapa 1).
  * Abre também para usuário sem empresa da área do cliente.

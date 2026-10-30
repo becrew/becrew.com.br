@@ -202,7 +202,7 @@ check "pagina: sem empresa, plataformas.php abre" "$(code_as teste "http://127.0
 check "pagina: sem empresa, o menu não tem Entregas" "$(echo "$pt" | grep -c 'href="entregas.php"')" "0"
 check "pagina: sem empresa, painel.php vai para plataformas.php" "$(curl -s -o /dev/null -w '%{http_code} %{redirect_url}' -b "$TMP/jar-teste" "http://127.0.0.1:$PORT/painel.php")" "303 http://127.0.0.1:$PORT/plataformas.php"
 check "pagina: sem empresa, entregas.php vai para plataformas.php" "$(curl -s -o /dev/null -w '%{http_code} %{redirect_url}' -b "$TMP/jar-teste" "http://127.0.0.1:$PORT/entregas.php")" "303 http://127.0.0.1:$PORT/plataformas.php"
-check "pagina: as plataformas continuam com os 3 cartões" "$(echo "$pt" | grep -o -e 'SPEAKR.CREW' -e 'GAMING.CREW' -e 'RULLER.CREW' | sort -u | wc -l | tr -d ' ')" "3"
+check "pagina: as plataformas continuam com os cartões do Gaming e do Ruller" "$(echo "$pt" | grep -o -e 'GAMING.CREW' -e 'RULLER.CREW' | sort -u | wc -l | tr -d ' ')" "2"
 
 # --- limite de uso: por usuário logado e por IP (o IP real atrás da CDN ainda não foi confirmado) ---
 rm -f "$TMP"/assets/php/data/rl-area*.json

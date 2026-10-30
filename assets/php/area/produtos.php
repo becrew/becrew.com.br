@@ -10,17 +10,17 @@ if (!defined('CREW_AUTH')) { http_response_code(404); exit; }
  * Etapa 1 dos pontos (decisão de Rafael, 2026-10-30): os níveis ficam à vista, mas o placar ainda não conta.
  * CREW_AREA_PLACAR: XP da empresa, nível atual, barra, XP de cada produto e limites dos níveis. Liga quando os
  *   pontos vierem da Plataforma, por empresa; a conta abaixo (crew_area_xp) ainda é a provisória do catálogo.
+ *   Regra aprovada (Rafael, 2026-10-30): pontos = lucro bruto que a empresa gerou para a Crew, acumulado mês a mês.
  * CREW_AREA_BENEFICIOS: benefícios de cada nível. Liga quando Rafael decidir os benefícios.
  */
 const CREW_AREA_PLACAR = false;
 const CREW_AREA_BENEFICIOS = false;
 
-/* Categorias, na ordem do CRM (as frentes). [chave => [rótulo PT, ícone]] */
+/* Categorias, na ordem do CRM (as frentes). [chave => [rótulo PT, ícone]]. O Speakr saiu da vitrine (vira a aba Relatórios), e com ele a Consultoria. */
 function crew_area_categorias(): array {
     return [
         'gaming' => ['Gaming', 'gamepad-2'],
         'agencia' => ['Agência', 'megaphone'],
-        'consultoria' => ['Consultoria', 'trending-up'],
         'tech' => ['Tech', 'cpu'],
     ];
 }
@@ -33,9 +33,6 @@ function crew_area_categorias(): array {
  */
 function crew_area_produtos(): array {
     return [
-        ['chave' => 'speakr', 'nome' => 'SPEAKR.CREW', 'categoria' => 'consultoria', 'cor' => '255 212 0', 'foto' => 'assets/img/equipe-resultados.webp', 'xp' => 1000,
-         'tipo' => ['area.prod.tipo.relatorios', 'Relatórios e análises', 'bar-chart'],
-         'texto' => 'Entre no <strong>Speakr</strong> e acompanhe os relatórios, as análises e as visões estratégicas do seu negócio.', 'link' => null],
         ['chave' => 'gaming', 'nome' => 'GAMING.CREW', 'categoria' => 'gaming', 'cor' => '240 52 52', 'foto' => 'assets/img/painel-gaming.webp', 'xp' => 1500,
          'tipo' => ['area.prod.tipo.comunidade', 'Comunidade gamer', 'users'],
          'texto' => 'Entre no <strong>Side Quest</strong> e acompanhe as missões, a comunidade gamer e os resultados das ações da sua marca.', 'link' => 'https://side-quest-drab-two.vercel.app/dashboard'],

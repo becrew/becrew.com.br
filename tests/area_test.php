@@ -187,7 +187,11 @@ foreach (['Produtos', 'Produtos sem empresa'] as $nome) {
     check("tela $nome: painel avisa que a contagem começa em breve", strpos($telas[$nome], 'area.xp.embreve') !== false);
     check("tela $nome: Gaming fica para contratar", preg_match('/class="prod-card is-contratar"[^>]*>(?:(?!<\/article>).)*GAMING\.CREW/s', $telas[$nome]) === 1);
 }
-check('produtos: o link do Side Quest continua no catálogo para voltar com o contratado da Plataforma', in_array('https://side-quest-drab-two.vercel.app/dashboard', array_column(crew_area_produtos(), 'link'), true));
+// Speakr saiu da vitrine (decisão de Rafael, 2026-10-30): vira a aba Relatórios. Sem ele, a vitrine fica só com as frentes.
+check('produtos: Speakr não está mais no catálogo', !in_array('speakr', array_column(crew_area_produtos(), 'chave'), true));
+check('categorias: só as frentes (gaming, agencia, tech)', array_keys(crew_area_categorias()) === ['gaming', 'agencia', 'tech']);
+foreach (['Produtos', 'Produtos sem empresa'] as $nome) check("tela $nome: sem Speakr nem Consultoria", stripos($telas[$nome], 'speakr') === false && stripos($telas[$nome], 'consultoria') === false);
+check('produtos: o link do Side Quest continua no catálogo para voltar com o contratado da Plataforma',in_array('https://side-quest-drab-two.vercel.app/dashboard', array_column(crew_area_produtos(), 'link'), true));
 
 // --- repositório público: nada de plano interno nem de caminho do servidor ---
 $readme = file_get_contents("$raiz/README.md");
