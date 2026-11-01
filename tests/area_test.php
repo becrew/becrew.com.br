@@ -212,5 +212,11 @@ check('entregas.js: desenhar() zera formAberto', preg_match('/function desenhar\
 check('entregas.js: resposta de busca antiga é descartada (geração)', strpos($js, 'geracao') !== false);
 check('entregas.js: 200 sem entrega recarrega a lista', preg_match('/status === 200[^;]*;?\s*[^\n]*buscar\(true\)/s', $js) === 1);
 
+// --- ícones: a medalha (award) é a da Lucide, um círculo com as fitas, e cabe na caixa 24x24 ---
+$icones = file_get_contents("$raiz/assets/js/lucide-local.js");
+$award = preg_match("/'award':'([^']*)'/", $icones, $m) ? $m[1] : '';
+check('ícone award: tem o círculo da medalha', strpos($award, 'a6 6 0') !== false);
+check('ícone award: não é a estrela torta de antes', $award !== '' && strpos($award, 'L11.33.96') === false && strpos($award, '1.279z') === false);
+
 echo "\n" . ($total - $fails) . " de $total passaram\n";
 exit($fails ? 1 : 0);
