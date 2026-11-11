@@ -62,8 +62,8 @@ function crew_area_produtos(): array {
          'tipo' => ['area.prod.tipo.campanhas', 'Campanhas', 'target'],
          'texto' => 'Entre no <strong>Ruller</strong> e acompanhe o planejamento, as entregas e os indicadores das suas campanhas.', 'link' => null],
         // Games. Time de E-Sports: o mesmo produto e o mesmo texto do Side Quest (src/lib/products.ts, TIME_ESPORTS, e
-        // dashboard/produtos; Rafael, 2026-11-11). Hub IPC "em breve" até Rafael mandar o texto (2026-11-11).
-        ['chave' => 'timeesports', 'nome' => 'TIME DE E-SPORTS', 'categoria' => 'games', 'cor' => '240 52 52', 'foto' => 'assets/img/comunidade-gamers.webp', 'xp' => 1000,
+        // dashboard/produtos; Rafael, 2026-11-11). A foto é a do Side Quest (public/headers/topo-playbook.png), em WebP. Hub IPC "em breve" até Rafael mandar o texto (2026-11-11).
+        ['chave' => 'timeesports', 'nome' => 'TIME DE E-SPORTS', 'categoria' => 'games', 'cor' => '240 52 52', 'foto' => 'assets/img/time-esports.webp', 'xp' => 1000,
          'tipo' => ['area.prod.tipo.esports', 'E-sports', 'gamepad-2'],
          'texto' => 'Patrocínio, presença em campeonatos e conteúdo com os jogadores.', 'link' => null],
         ['chave' => 'hubipc', 'nome' => 'HUB IPC', 'categoria' => 'games', 'breve' => true, 'cor' => '240 52 52', 'foto' => 'assets/img/post-gamers-streamer.webp', 'xp' => 1000,

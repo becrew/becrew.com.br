@@ -235,6 +235,10 @@ $cat = array_column(crew_area_produtos(), 'categoria', 'chave');
 check('produtos: cada um na aba certa', $cat === ['consultoria' => 'servicos', 'essencial' => 'servicos', 'profissional' => 'servicos', 'ruller' => 'servicos', 'timeesports' => 'games', 'hubipc' => 'games', 'exitlag' => 'svas', 'kaspersky' => 'svas', 'socialcomics' => 'svas']);
 check('produtos: Speakr não está no catálogo', !isset($cat['speakr']));
 check('produtos: Ruller continua no catálogo, marcado como oculto', (array_column(crew_area_produtos(), null, 'chave')['ruller']['oculto'] ?? false) === true);
+// Time de E-Sports com a mesma imagem do Side Quest (public/headers/topo-playbook.png), em WebP (Rafael, 2026-11-11).
+$fotoEsports = array_column(crew_area_produtos(), 'foto', 'chave')['timeesports'] ?? '';
+check('produtos: Time de E-Sports usa a imagem do Side Quest', $fotoEsports === 'assets/img/time-esports.webp');
+check('produtos: a imagem do Time de E-Sports existe e é WebP', is_file("$raiz/$fotoEsports") && substr((string) file_get_contents("$raiz/$fotoEsports", false, null, 8, 4), 0, 4) === 'WEBP');
 check('produtos: nenhum tem link de acesso (o Side Quest é plataforma)', count(array_filter(array_column(crew_area_produtos(), 'link'))) === 0);
 $situacao = ['PLANO DE CONSULTORIA' => 'breve', 'PLANO ESSENCIAL' => 'contratar', 'PLANO PROFISSIONAL' => 'contratar', 'TIME DE E-SPORTS' => 'contratar', 'HUB IPC' => 'breve', 'EXITLAG' => 'contratar', 'KASPERSKY' => 'breve', 'SOCIAL COMICS' => 'breve'];
 foreach (['Produtos', 'Produtos sem empresa'] as $nome) {
