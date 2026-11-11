@@ -76,8 +76,9 @@ function crew_area_produtos(): array {
          'texto' => 'Ofereça o <strong>ExitLag</strong> aos seus assinantes: menos lag e ping mais estável nos jogos online, como serviço de valor agregado no plano.', 'link' => null],
         // Abya Go: aprovado pela Abya (Rafael, 2026-11-11). O contrato exige o crédito "Tecnologia Abya" e proíbe falar em nome dela
         // sem aprovação: o texto é o aprovado, sem promessa, latência, número de jogos nem editoras. Capa: o logo oficial "ABYA Go — White"
-        // do guia de marca, montado do SVG sem mudar cor, proporção nem forma, sobre o fundo do ExitLag, no padrão dos outros SVAs.
-        ['chave' => 'abyago', 'nome' => 'ABYA GO', 'categoria' => 'svas', 'cor' => '92 60 210', 'foto' => 'assets/img/produtos/abyago.png', 'icone' => 'gamepad-2', 'xp' => 300,
+        // do guia de marca, montado do SVG sem mudar cor, proporção nem forma, sobre o degradê radial das cores oficiais da Abya
+        // (Purple #C955FF no canto inferior esquerdo, Violet #4E26C6 no resto; Rafael, 2026-11-11). A cor do cartão é o Violet.
+        ['chave' => 'abyago', 'nome' => 'ABYA GO', 'categoria' => 'svas', 'cor' => '78 38 198', 'foto' => 'assets/img/produtos/abyago.png', 'icone' => 'gamepad-2', 'xp' => 300,
          'tipo' => ['area.prod.tipo.nuvem', 'Jogos na nuvem', 'monitor-play'],
          'texto' => 'Plataforma white label de jogos na nuvem: seu provedor oferece jogos por assinatura mensal com a própria marca, com catálogo de títulos e pacotes extras de conteúdo. Tecnologia Abya.', 'link' => null],
         ['chave' => 'kaspersky', 'nome' => 'KASPERSKY', 'categoria' => 'svas', 'cor' => '0 152 129', 'foto' => 'assets/img/produtos/kaspersky.png', 'icone' => 'shield', 'xp' => 300, 'breve' => true,

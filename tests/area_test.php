@@ -245,6 +245,15 @@ check('inglês: Abya Go com o crédito "Abya technology"', strpos($en, "'painel.
 $fotoAbya = array_column(crew_area_produtos(), 'foto', 'chave')['abyago'] ?? '';
 $tamAbya = $fotoAbya ? @getimagesize("$raiz/$fotoAbya") : false;
 check('produtos: Abya Go usa assets/img/produtos/abyago.png, 800x600, como o ExitLag', $fotoAbya === 'assets/img/produtos/abyago.png' && $tamAbya !== false && $tamAbya[0] === 800 && $tamAbya[1] === 600 && $tamAbya['mime'] === 'image/png');
+// Abya Go com as cores oficiais da Abya (guia de marca, "Brand Color"): Violet #4E26C6 e Purple #C955FF em degradê radial
+// saindo do canto inferior esquerdo (Rafael, 2026-11-11).
+check('produtos: Abya Go com a cor Violet da Abya', (array_column(crew_area_produtos(), 'cor', 'chave')['abyago'] ?? '') === '78 38 198');
+$perto = fn(array $c, array $alvo, int $tol) => abs($c[0] - $alvo[0]) <= $tol && abs($c[1] - $alvo[1]) <= $tol && abs($c[2] - $alvo[2]) <= $tol;
+$corPx = function (string $arq, int $x, int $y): array { $im = @imagecreatefrompng($arq); if (!$im) return [-99, -99, -99]; $c = imagecolorsforindex($im, imagecolorat($im, $x, $y)); return [$c['red'], $c['green'], $c['blue']]; };
+$arqAbya = "$raiz/assets/img/produtos/abyago.png";
+check('imagem do Abya Go: Purple no canto inferior esquerdo', $perto($corPx($arqAbya, 2, 597), [201, 85, 255], 12));
+check('imagem do Abya Go: Violet no canto superior direito', $perto($corPx($arqAbya, 797, 2), [78, 38, 198], 12));
+check('imagem do Abya Go: sem o fundo escuro de antes', !$perto($corPx($arqAbya, 400, 50), [20, 19, 22], 30));
 check('produtos: nenhum tem link de acesso (o Side Quest é plataforma)', count(array_filter(array_column(crew_area_produtos(), 'link'))) === 0);
 $situacao = ['CONSULTORIA' => 'contratar', 'MARKETING' => 'contratar', 'TIME DE E-SPORTS' => 'contratar', 'HUB IPC' => 'contratar', 'EXITLAG' => 'contratar', 'ABYA GO' => 'contratar', 'KASPERSKY' => 'breve', 'SOCIAL COMICS' => 'breve'];
 foreach (['Produtos', 'Produtos sem empresa'] as $nome) {
