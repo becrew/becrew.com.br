@@ -256,12 +256,19 @@ check('imagem do Abya Go: Violet no canto superior direito', $perto($corPx($arqA
 check('imagem do Abya Go: sem o fundo escuro de antes', !$perto($corPx($arqAbya, 400, 50), [20, 19, 22], 30));
 check('inglês: Time de E-Sports explica o produto', strpos($en, "Create your ISP\\'s own e-sports team to compete in tournaments and make your presence felt in the gaming community.") !== false);
 check('produtos: nenhum tem link de acesso (o Side Quest é plataforma)', count(array_filter(array_column(crew_area_produtos(), 'link'))) === 0);
-$situacao = ['CONSULTORIA' => 'contratar', 'MARKETING' => 'contratar', 'TIME DE E-SPORTS' => 'contratar', 'HUB IPC' => 'contratar', 'EXITLAG' => 'contratar', 'ABYA GO' => 'contratar', 'KASPERSKY' => 'breve', 'SOCIAL COMICS' => 'breve'];
+$situacao = ['CONSULTORIA' => 'contratar', 'MARKETING' => 'contratar', 'TIME DE E-SPORTS' => 'contratar', 'HUB IPC' => 'contratar'];
+// SVAs: um cartão só, que abre um popup com todos (Rafael, 2026-11-11). Cada SVA continua no catálogo, com o XP, para a etapa 2.
+$situacaoSva = ['EXITLAG' => 'contratar', 'ABYA GO' => 'contratar', 'KASPERSKY' => 'breve', 'SOCIAL COMICS' => 'breve'];
+$svasCat = array_values(array_filter(crew_area_produtos(), fn($p) => $p['categoria'] === 'svas'));
+check('produtos: os quatro SVAs continuam no catálogo, com 300 XP cada', array_column($svasCat, 'xp', 'chave') === ['exitlag' => 300, 'abyago' => 300, 'kaspersky' => 300, 'socialcomics' => 300]);
+$grupoSva = function_exists('crew_area_svas_cartao') ? crew_area_svas_cartao() : [];
+$tamGrupo = isset($grupoSva['foto']) ? @getimagesize("$raiz/{$grupoSva['foto']}") : false;
+check('produtos: o cartão dos SVAs tem imagem de 800x600 no site', $tamGrupo !== false && $tamGrupo[0] === 800 && $tamGrupo[1] === 600);
 foreach (['Produtos', 'Produtos sem empresa'] as $nome) {
     $h = $telas[$nome];
     check("tela $nome: abas Serviços, Games e SVAs", strpos($h, 'data-prod-cat="servicos"') !== false && strpos($h, 'data-prod-cat="games"') !== false && strpos($h, 'data-prod-cat="svas"') !== false);
     check("tela $nome: sem as abas antigas", strpos($h, 'data-prod-cat="gaming"') === false && strpos($h, 'data-prod-cat="agencia"') === false && strpos($h, 'data-prod-cat="tech"') === false);
-    check("tela $nome: oito cartões", substr_count($h, 'class="prod-card ') === 8);
+    check("tela $nome: cinco cartões (dois de Serviços, dois de Games e um de SVAs)", substr_count($h, 'class="prod-card ') === 5);
     foreach ($situacao as $prod => $sit) {
         check("tela $nome: $prod aparece como $sit", preg_match('/class="prod-card is-' . $sit . '"[^>]*>(?:(?!<\/article>).)*>' . preg_quote($prod, '/') . '<\/h2>/s', $h) === 1);
     }
@@ -280,12 +287,23 @@ foreach (['Produtos', 'Produtos sem empresa'] as $nome) {
     check("tela $nome: Consultoria diz o que entrega", strpos($h, 'Consultoria de gestão para o seu provedor, em seis frentes') !== false);
     check("tela $nome: sem o texto provisório da Consultoria", strpos($h, 'Os detalhes chegam em breve') === false);
     check("tela $nome: nomes sem \"para ISPs\"", stripos($h, 'para ISPs') === false);
-    // SVAs: Abya Go, aprovado pela Abya (Rafael, 2026-11-11). Crédito "Tecnologia Abya" obrigatório; sem preço; logo oficial (White) do guia de marca.
-    $abya = preg_match('/<article class="prod-card is-contratar" data-prod="contratar" data-cat="svas"(?:(?!<\/article>).)*>ABYA GO<\/h2>(?:(?!<\/article>).)*<\/article>/s', $h, $mAbya) ? $mAbya[0] : '';
-    check("tela $nome: Abya Go em SVAs, com \"Quero contratar\"", $abya !== '' && strpos($abya, 'Quero contratar') !== false);
-    check("tela $nome: Abya Go é white label e dá o crédito \"Tecnologia Abya\"", strpos($abya, 'white label') !== false && strpos($abya, 'Tecnologia Abya.') !== false);
-    check("tela $nome: Abya Go sem preço e sem \"em breve\"", $abya !== '' && strpos($abya, 'R$') === false && stripos($abya, 'em breve') === false);
-    check("tela $nome: Abya Go com o logo oficial no lugar do ícone", strpos($abya, 'src="assets/img/produtos/abyago.png"') !== false && strpos($abya, 'prod-card__foto is-marca') === false);
+    // SVAs: a aba tem um cartão só, que abre o popup com os quatro (Rafael, 2026-11-11).
+    check("tela $nome: aba SVAs com um cartão só", preg_match('/data-prod-cat="svas"[^>]*>(?:(?!<\/button>).)*<b>1<\/b>/s', $h) === 1 && substr_count($h, 'data-cat="svas"') === 1);
+    $cartaoSva = preg_match('/<article class="prod-card is-grupo"[^>]*data-cat="svas"(?:(?!<\/article>).)*<\/article>/s', $h, $mC) ? $mC[0] : '';
+    check("tela $nome: cartão SVAs DA CREW explica o braço de SVAs", strpos($cartaoSva, '>SVAs DA CREW</h2>') !== false && strpos($cartaoSva, 'Serviços de valor adicionado para o seu provedor incluir nos planos e oferecer mais aos assinantes.') !== false);
+    check("tela $nome: cartão dos SVAs abre o popup", strpos($cartaoSva, 'data-dialogo-abrir="svas-dialogo"') !== false);
+    check("tela $nome: nenhum SVA tem cartão próprio", preg_match('/<h2 class="prod-card__nome"[^>]*>(EXITLAG|ABYA GO|KASPERSKY|SOCIAL COMICS)<\/h2>/', $h) === 0);
+    $dialogo = preg_match('/<dialog class="prod-dialogo" id="svas-dialogo"(?:(?!<\/dialog>).)*<\/dialog>/s', $h, $mD) ? $mD[0] : '';
+    check("tela $nome: popup acessível (título, botão X com nome)", $dialogo !== '' && strpos($dialogo, 'aria-labelledby="svas-dialogo-titulo"') !== false && preg_match('/<button[^>]*data-dialogo-fechar[^>]*aria-label="Fechar"/', $dialogo) === 1);
+    foreach ($svasCat as $p) {
+        check("tela $nome: popup tem {$p['nome']} com o logo e o texto de hoje", strpos($dialogo, '>' . $p['nome'] . '</h3>') !== false && strpos($dialogo, 'src="' . $p['foto'] . '"') !== false && strpos($dialogo, $p['texto']) !== false);
+    }
+    foreach ($situacaoSva as $prod => $sit) {
+        check("tela $nome: no popup, $prod aparece como $sit", preg_match('/<li class="prod-sva is-' . $sit . '"(?:(?!<\/li>).)*>' . preg_quote($prod, '/') . '<\/h3>(?:(?!<\/li>).)*' . ($sit === 'contratar' ? 'Quero contratar' : 'Chega em breve') . '/s', $dialogo) === 1);
+    }
+    // Abya Go: texto aprovado pela Abya, sem mudança, com o crédito "Tecnologia Abya" (o contrato exige).
+    check("tela $nome: Abya Go no popup com o texto aprovado e o crédito", strpos($dialogo, 'Plataforma white label de jogos na nuvem: seu provedor oferece jogos por assinatura mensal com a própria marca, com catálogo de títulos e pacotes extras de conteúdo. Tecnologia Abya.') !== false);
+    check("tela $nome: SVAs sem preço", $dialogo !== '' && strpos($dialogo . $cartaoSva, 'R$') === false);
     check("tela $nome: sem Speakr, Ruller nem Side Quest", stripos($h, 'speakr') === false && strpos($h, 'RULLER.CREW') === false && strpos($h, 'side-quest') === false);
 }
 
