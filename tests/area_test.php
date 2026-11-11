@@ -242,6 +242,9 @@ check('produtos: a imagem do Time de E-Sports existe e é WebP', is_file("$raiz/
 $en = (string) file_get_contents("$raiz/assets/js/lang/en/area.js");
 check('inglês: Consultoria e Marketing sem "for ISPs"', stripos($en, 'for ISPs') === false && strpos($en, "'painel.consultoria.title': 'CONSULTING'") !== false && strpos($en, "'painel.marketing.title': 'MARKETING'") !== false);
 check('inglês: Abya Go com o crédito "Abya technology"', strpos($en, "'painel.abyago.title': 'ABYA GO'") !== false && stripos($en, 'white-label') !== false && strpos($en, 'Abya technology.') !== false);
+$fotoAbya = array_column(crew_area_produtos(), 'foto', 'chave')['abyago'] ?? '';
+$tamAbya = $fotoAbya ? @getimagesize("$raiz/$fotoAbya") : false;
+check('produtos: Abya Go usa assets/img/produtos/abyago.png, 800x600, como o ExitLag', $fotoAbya === 'assets/img/produtos/abyago.png' && $tamAbya !== false && $tamAbya[0] === 800 && $tamAbya[1] === 600 && $tamAbya['mime'] === 'image/png');
 check('produtos: nenhum tem link de acesso (o Side Quest é plataforma)', count(array_filter(array_column(crew_area_produtos(), 'link'))) === 0);
 $situacao = ['CONSULTORIA' => 'contratar', 'MARKETING' => 'contratar', 'TIME DE E-SPORTS' => 'contratar', 'HUB IPC' => 'contratar', 'EXITLAG' => 'contratar', 'ABYA GO' => 'contratar', 'KASPERSKY' => 'breve', 'SOCIAL COMICS' => 'breve'];
 foreach (['Produtos', 'Produtos sem empresa'] as $nome) {
@@ -265,12 +268,12 @@ foreach (['Produtos', 'Produtos sem empresa'] as $nome) {
     check("tela $nome: Consultoria diz o que entrega", strpos($h, 'Consultoria de gestão para o seu provedor, em seis frentes') !== false);
     check("tela $nome: sem o texto provisório da Consultoria", strpos($h, 'Os detalhes chegam em breve') === false);
     check("tela $nome: nomes sem \"para ISPs\"", stripos($h, 'para ISPs') === false);
-    // SVAs: Abya Go, aprovado pela Abya (Rafael, 2026-11-11). Crédito "Tecnologia Abya" obrigatório; sem preço; logo ainda não veio.
+    // SVAs: Abya Go, aprovado pela Abya (Rafael, 2026-11-11). Crédito "Tecnologia Abya" obrigatório; sem preço; logo oficial (White) do guia de marca.
     $abya = preg_match('/<article class="prod-card is-contratar" data-prod="contratar" data-cat="svas"(?:(?!<\/article>).)*>ABYA GO<\/h2>(?:(?!<\/article>).)*<\/article>/s', $h, $mAbya) ? $mAbya[0] : '';
     check("tela $nome: Abya Go em SVAs, com \"Quero contratar\"", $abya !== '' && strpos($abya, 'Quero contratar') !== false);
     check("tela $nome: Abya Go é white label e dá o crédito \"Tecnologia Abya\"", strpos($abya, 'white label') !== false && strpos($abya, 'Tecnologia Abya.') !== false);
     check("tela $nome: Abya Go sem preço e sem \"em breve\"", $abya !== '' && strpos($abya, 'R$') === false && stripos($abya, 'em breve') === false);
-    check("tela $nome: Abya Go com o ícone de gamepad enquanto o logo não vem", strpos($abya, 'prod-card__foto is-marca') !== false && strpos($abya, 'data-lucide="gamepad-2"') !== false);
+    check("tela $nome: Abya Go com o logo oficial no lugar do ícone", strpos($abya, 'src="assets/img/produtos/abyago.png"') !== false && strpos($abya, 'prod-card__foto is-marca') === false);
     check("tela $nome: sem Speakr, Ruller nem Side Quest", stripos($h, 'speakr') === false && strpos($h, 'RULLER.CREW') === false && strpos($h, 'side-quest') === false);
 }
 
