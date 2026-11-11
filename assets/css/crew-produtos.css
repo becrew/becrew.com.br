@@ -39,12 +39,11 @@
 .prod-vazio[hidden] { display: none; }
 @media (prefers-reduced-motion: reduce) { .prod-card, .prod-card:hover { transition: none; transform: none; } }
 
-/* ---- Categorias: as frentes do CRM, com as cores de lá (Consultoria ainda não tem cor no CRM) ---- */
+/* ---- Abas de Produtos: Serviços, Games e SVAs, com as cores das frentes no CRM (Agência, Gaming e Tech) ---- */
 .prod-cats, .prod-card { --cat-cor: var(--app-text); }
-[data-prod-cat="gaming"], [data-cat="gaming"] { --cat-cor: #D0201A; }
-[data-prod-cat="agencia"], [data-cat="agencia"] { --cat-cor: #111111; }
-[data-prod-cat="consultoria"], [data-cat="consultoria"] { --cat-cor: #7A4DFF; }
-[data-prod-cat="tech"], [data-cat="tech"] { --cat-cor: #1F5BFF; }
+[data-prod-cat="servicos"], [data-cat="servicos"] { --cat-cor: #111111; }
+[data-prod-cat="games"], [data-cat="games"] { --cat-cor: #D0201A; }
+[data-prod-cat="svas"], [data-cat="svas"] { --cat-cor: #1F5BFF; }
 
 .prod-cats { display: flex; gap: .25rem; overflow-x: auto; scrollbar-width: none; border-bottom: 1px solid var(--app-line); }
 .prod-cats::-webkit-scrollbar { display: none; }

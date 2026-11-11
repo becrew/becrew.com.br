@@ -118,7 +118,7 @@ $raiz = dirname(__DIR__);
 $dic = '';
 foreach (['common', 'area'] as $n) $dic .= file_get_contents("$raiz/assets/js/lang/en/$n.js");
 function tem_chave($dic, $k) { return strpos($dic, "'$k'") !== false; }
-foreach (['assets/php/area/layout.php', 'painel.php', 'entregas.php', 'plataformas.php'] as $arq) {
+foreach (['assets/php/area/layout.php', 'painel.php', 'entregas.php', 'plataformas.php', 'produtos.php'] as $arq) {
     preg_match_all('/data-i18n="([^"<]+)"/', file_get_contents("$raiz/$arq"), $m);
     foreach (array_unique($m[1]) as $k) check("en: $arq usa '$k'", tem_chave($dic, $k));
 }
@@ -133,7 +133,7 @@ foreach (['tema', 'arte'] as $t) {
     for ($i = 1; $i <= 6; $i++) $dinamicas[] = "ent.motivo.$t.$i";
 }
 foreach (['inicio', 'entregas', 'relatorios', 'produtos', 'plataformas', 'soon'] as $n) $dinamicas[] = "area.nav.$n";
-foreach (['inicio', 'entregas', 'plataformas'] as $n) { $dinamicas[] = "area.$n.meta"; $dinamicas[] = "area.$n.title"; }
+foreach (['inicio', 'entregas', 'plataformas', 'produtos'] as $n) { $dinamicas[] = "area.$n.meta"; $dinamicas[] = "area.$n.title"; }
 foreach ($dinamicas as $k) check("en: chave dinâmica '$k'", tem_chave($dic, $k));
 
 // --- pontos (XP) e níveis: cada produto contratado soma XP; o XP define o nível ---
@@ -158,7 +158,7 @@ function pagina_logada(string $pagina, string $email): string {
         $tmp = sys_get_temp_dir() . '/crew-area-' . bin2hex(random_bytes(4));
         mkdir("$tmp/assets/php/area", 0700, true);
         mkdir("$tmp/sessoes", 0700);
-        foreach (['painel.php', 'entregas.php', 'plataformas.php', 'assets/php/auth.php'] as $f) copy("$raiz/$f", "$tmp/$f");
+        foreach (['painel.php', 'entregas.php', 'plataformas.php', 'produtos.php', 'assets/php/auth.php'] as $f) copy("$raiz/$f", "$tmp/$f");
         foreach (glob("$raiz/assets/php/area/*.php") as $f) copy($f, "$tmp/assets/php/area/" . basename($f));
         file_put_contents("$tmp/assets/php/users.php", "<?php return ['a@example.com' => ['hash' => 'x', 'empresa' => 'EMP-0001'], 'teste@example.com' => ['hash' => 'x']];");
         file_put_contents("$tmp/login.php", "<?php session_save_path(__DIR__ . '/sessoes'); session_start(); \$_SESSION['crew_user'] = getenv('CREW_TESTE_EMAIL');");
@@ -171,34 +171,73 @@ function pagina_logada(string $pagina, string $email): string {
 $telas = [
     'Início' => pagina_logada('painel.php', 'a@example.com'),
     'Entregas' => pagina_logada('entregas.php', 'a@example.com'),
-    'Produtos' => pagina_logada('plataformas.php', 'a@example.com'),
-    'Produtos sem empresa' => pagina_logada('plataformas.php', 'teste@example.com'),
+    'Plataformas' => pagina_logada('plataformas.php', 'a@example.com'),
+    'Plataformas sem empresa' => pagina_logada('plataformas.php', 'teste@example.com'),
+    'Produtos' => pagina_logada('produtos.php', 'a@example.com'),
+    'Produtos sem empresa' => pagina_logada('produtos.php', 'teste@example.com'),
 ];
+$comEmpresa = ['Início', 'Entregas', 'Plataformas', 'Produtos'];
 foreach ($telas as $nome => $html) {
     check("tela $nome: abre (área logada)", strpos($html, 'app-nav') !== false && strpos($html, 'Fatal') === false && strpos($html, 'Warning') === false);
     check("tela $nome: nenhum número de XP", preg_match('/\d[\d.]*\s*(<\/[a-z]+>\s*)*XP/', $html) === 0);
     check("tela $nome: nenhum benefício de nível", strpos($html, 'beneficio') === false && count(array_filter(crew_area_niveis(), fn($n) => strpos($html, $n[3]) !== false)) === 0);
-    check("tela $nome: nenhum \"Contratado\" nem \"Acessar\"", strpos($html, 'Contratado') === false && strpos($html, 'area.prod.acessar') === false && strpos($html, 'side-quest') === false);
-    check("tela $nome: barra lateral leva aos níveis", strpos($html, 'href="plataformas.php#pontos"') !== false);
+    check("tela $nome: nenhum \"Contratado\" nem \"Acessar\"", strpos($html, 'Contratado') === false && strpos($html, 'area.prod.acessar') === false);
+    check("tela $nome: nenhum preço", preg_match('/R\$\s*\d/', $html) === 0);
+    check("tela $nome: nada aponta mais para os pontos em Plataformas", strpos($html, 'plataformas.php#pontos') === false);
+    // Menu (decisões de Rafael, 2026-11-11): Produtos ganha página; Relatórios continua "em breve"; sem empresa vê Produtos e Plataformas.
+    check("tela $nome: menu leva a Produtos e a Plataformas", strpos($html, 'class="app-nav__link" href="produtos.php"') !== false && strpos($html, 'class="app-nav__link" href="plataformas.php"') !== false);
+    check("tela $nome: Produtos não está mais \"em breve\"", preg_match('/is-soon[^>]*>(?:(?!<\/span><em).)*area\.nav\.produtos/s', $html) === 0);
+    if (in_array($nome, $comEmpresa, true)) {
+        check("tela $nome: barra lateral leva aos pontos no Início", strpos($html, 'href="painel.php#pontos"') !== false);
+        check("tela $nome: Relatórios continua \"em breve\"", preg_match('/is-soon[^>]*><i data-lucide="file-text"><\/i><span data-i18n="area\.nav\.relatorios">/', $html) === 1);
+    } else {
+        check("tela $nome: sem empresa, nada de pontos (eles são da empresa)", strpos($html, 'app-nivel') === false && strpos($html, 'painel.php#pontos') === false);
+        check("tela $nome: sem empresa, o menu não tem Início nem Entregas", strpos($html, 'href="painel.php"') === false && strpos($html, 'href="entregas.php"') === false);
+    }
 }
-check('tela Início: faixa dos pontos avisa que a contagem começa em breve', strpos($telas['Início'], 'area.xp.embreve') !== false);
-foreach (['Produtos', 'Produtos sem empresa'] as $nome) {
-    check("tela $nome: mostra os quatro níveis", count(array_filter(crew_area_niveis(), fn($n) => strpos($telas[$nome], 'data-i18n="area.nivel.' . $n[0] . '"') !== false)) === 4);
-    check("tela $nome: painel avisa que a contagem começa em breve", strpos($telas[$nome], 'area.xp.embreve') !== false);
-    check("tela $nome: Gaming fica para contratar", preg_match('/class="prod-card is-contratar"[^>]*>(?:(?!<\/article>).)*GAMING\.CREW/s', $telas[$nome]) === 1);
+// O título do topo bate com o nome do menu.
+foreach (['Início' => ['inicio', 'Início'], 'Entregas' => ['entregas', 'Entregas'], 'Plataformas' => ['plataformas', 'Plataformas'], 'Produtos' => ['produtos', 'Produtos']] as $nome => [$k, $t]) {
+    check("tela $nome: o topo diz \"$t\"", strpos($telas[$nome], 'data-i18n="area.' . $k . '.title">' . $t . '</h1>') !== false);
 }
-// Speakr saiu da vitrine (decisão de Rafael, 2026-10-30): vira a aba Relatórios. Sem ele, a vitrine fica só com as frentes.
-check('produtos: Speakr não está mais no catálogo', !in_array('speakr', array_column(crew_area_produtos(), 'chave'), true));
-check('categorias: só as frentes (gaming, agencia, tech)', array_keys(crew_area_categorias()) === ['gaming', 'agencia', 'tech']);
-foreach (['Produtos', 'Produtos sem empresa'] as $nome) check("tela $nome: sem Speakr nem Consultoria", stripos($telas[$nome], 'speakr') === false && stripos($telas[$nome], 'consultoria') === false);
-// Ruller fica oculto enquanto a plataforma dele está em desenvolvimento (decisão de Rafael, 2026-10-30); a aba sem produto some.
+
+// Pontos e níveis no Início (Rafael, 2026-11-11: "a parte de pontos deveria aparecer na pagina inicial"), ainda na etapa 1.
+$ini = $telas['Início'];
+check('tela Início: painel de pontos com âncora #pontos', strpos($ini, 'class="xp-painel" id="pontos"') !== false);
+check('tela Início: mostra os quatro níveis', count(array_filter(crew_area_niveis(), fn($n) => strpos($ini, 'data-i18n="area.nivel.' . $n[0] . '"') !== false)) === 4);
+check('tela Início: explica como funciona, sem benefício', strpos($ini, 'area.xp.como.pontos') !== false && strpos($ini, 'area.xp.como.texto') === false);
+check('tela Início: avisa que a contagem começa em breve', strpos($ini, 'area.xp.embreve') !== false);
+check('tela Início: a faixa que apontava para Plataformas saiu', strpos($ini, 'xp-faixa') === false);
+foreach (['Entregas', 'Plataformas', 'Plataformas sem empresa', 'Produtos', 'Produtos sem empresa'] as $nome) check("tela $nome: sem o painel de pontos", strpos($telas[$nome], 'xp-painel') === false);
+
+// Plataformas: só o Side Quest, com "Entrar no Side Quest" para todos e sem o selo "Contratado" (Rafael, 2026-11-11).
+$sq = 'https://side-quest-drab-two.vercel.app/dashboard';
+check('plataformas: só o Side Quest', function_exists('crew_area_plataformas') && array_column(crew_area_plataformas(), 'chave') === ['sidequest']);
+foreach (['Plataformas', 'Plataformas sem empresa'] as $nome) {
+    $h = $telas[$nome];
+    check("tela $nome: um cartão só", substr_count($h, 'class="prod-card ') === 1);
+    check("tela $nome: botão Entrar no Side Quest", strpos($h, 'href="' . $sq . '"') !== false && strpos($h, 'data-i18n="area.plat.entrar">Entrar no Side Quest') !== false);
+    check("tela $nome: avisa que o acesso é com o login do Side Quest", strpos($h, 'data-i18n="area.plat.login"') !== false);
+    check("tela $nome: nenhum produto do catálogo", stripos($h, 'EXITLAG') === false && strpos($h, 'GAMING.CREW') === false && strpos($h, 'data-prod-cat') === false);
+}
+
+// Produtos: três abas, Serviços, Games e SVAs (Rafael, 2026-11-11). Speakr vira Relatórios; Consultoria e Hub IPC "em breve"; Ruller oculto.
+check('categorias: Serviços, Games e SVAs', array_keys(crew_area_categorias()) === ['servicos', 'games', 'svas']);
+$cat = array_column(crew_area_produtos(), 'categoria', 'chave');
+check('produtos: cada um na aba certa', $cat === ['consultoria' => 'servicos', 'essencial' => 'servicos', 'profissional' => 'servicos', 'ruller' => 'servicos', 'ipc' => 'games', 'hubipc' => 'games', 'exitlag' => 'svas', 'kaspersky' => 'svas', 'socialcomics' => 'svas']);
+check('produtos: Speakr não está no catálogo', !isset($cat['speakr']));
 check('produtos: Ruller continua no catálogo, marcado como oculto', (array_column(crew_area_produtos(), null, 'chave')['ruller']['oculto'] ?? false) === true);
+check('produtos: nenhum tem link de acesso (o Side Quest é plataforma)', count(array_filter(array_column(crew_area_produtos(), 'link'))) === 0);
+$situacao = ['PLANO DE CONSULTORIA' => 'breve', 'PLANO ESSENCIAL' => 'contratar', 'PLANO PROFISSIONAL' => 'contratar', 'IPC' => 'contratar', 'HUB IPC' => 'breve', 'EXITLAG' => 'contratar', 'KASPERSKY' => 'breve', 'SOCIAL COMICS' => 'breve'];
 foreach (['Produtos', 'Produtos sem empresa'] as $nome) {
-    check("tela $nome: sem o cartão do Ruller", strpos($telas[$nome], 'RULLER.CREW') === false);
-    check("tela $nome: sem a aba Agência (nenhum produto à vista)", strpos($telas[$nome], 'data-prod-cat="agencia"') === false);
-    check("tela $nome: abas do Gaming e da Tech", strpos($telas[$nome], 'data-prod-cat="gaming"') !== false && strpos($telas[$nome], 'data-prod-cat="tech"') !== false);
+    $h = $telas[$nome];
+    check("tela $nome: abas Serviços, Games e SVAs", strpos($h, 'data-prod-cat="servicos"') !== false && strpos($h, 'data-prod-cat="games"') !== false && strpos($h, 'data-prod-cat="svas"') !== false);
+    check("tela $nome: sem as abas antigas", strpos($h, 'data-prod-cat="gaming"') === false && strpos($h, 'data-prod-cat="agencia"') === false && strpos($h, 'data-prod-cat="tech"') === false);
+    check("tela $nome: oito cartões", substr_count($h, 'class="prod-card ') === 8);
+    foreach ($situacao as $prod => $sit) {
+        check("tela $nome: $prod aparece como $sit", preg_match('/class="prod-card is-' . $sit . '"[^>]*>(?:(?!<\/article>).)*>' . preg_quote($prod, '/') . '<\/h2>/s', $h) === 1);
+    }
+    check("tela $nome: sem Speakr, Ruller nem Side Quest", stripos($h, 'speakr') === false && strpos($h, 'RULLER.CREW') === false && strpos($h, 'side-quest') === false);
 }
-check('produtos: o link do Side Quest continua no catálogo para voltar com o contratado da Plataforma', in_array('https://side-quest-drab-two.vercel.app/dashboard', array_column(crew_area_produtos(), 'link'), true));
 
 // --- repositório público: nada de plano interno nem de caminho do servidor ---
 $readme = file_get_contents("$raiz/README.md");
