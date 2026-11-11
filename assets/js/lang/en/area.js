@@ -17,6 +17,8 @@ window.CREW_I18N = Object.assign(window.CREW_I18N || {}, {
   'area.plataformas.title': 'Platforms',
   'area.produtos.meta': 'Products | Crew',
   'area.produtos.title': 'Products',
+  'area.pontos.meta': 'Points and levels | Crew',
+  'area.pontos.title': 'Points and levels',
   'area.carregando': 'Loading&hellip;',
   'area.tentar': 'Try again',
   'area.erro.carregar': 'We couldn\'t load this right now. Please try again.',

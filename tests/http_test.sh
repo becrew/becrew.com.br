@@ -15,7 +15,7 @@ trap cleanup EXIT
 
 check() { total=$((total+1)); if [ "$2" != "$3" ]; then fails=$((fails+1)); echo "FALHOU: $1 (esperado '$3', veio '$2')"; fi; }
 
-cp -R "$ROOT/assets" "$ROOT/.htaccess" "$ROOT/painel.php" "$ROOT/entregas.php" "$ROOT/plataformas.php" "$ROOT/produtos.php" "$TMP/" 2>/dev/null
+cp -R "$ROOT/assets" "$ROOT/.htaccess" "$ROOT/painel.php" "$ROOT/entregas.php" "$ROOT/plataformas.php" "$ROOT/produtos.php" "$ROOT/pontos.php" "$TMP/" 2>/dev/null
 HASH="$(php -r 'echo password_hash("senha-certa", PASSWORD_BCRYPT);')"
 cat > "$TMP/assets/php/users.php" <<PHP
 <?php return [
@@ -90,7 +90,7 @@ for u in teste a b c; do entrar "$u"; done
 mock_reset
 
 # --- páginas sem login vão ao login; a ponte sem login dá 401 ---
-for pg in painel.php entregas.php plataformas.php produtos.php; do
+for pg in painel.php entregas.php plataformas.php produtos.php pontos.php; do
   check "area: $pg sem login → 303 para o login" "$(curl -s -o /dev/null -w '%{http_code} %{redirect_url}' "http://127.0.0.1:$PORT/$pg")" "303 http://127.0.0.1:$PORT/area-do-cliente.html"
 done
 check "area: ponte sem login → 401" "$(code -H 'X-Requested-With: fetch' "$A?acao=entregas")" "401"
@@ -206,6 +206,7 @@ check "pagina: sem empresa, o menu tem Produtos e Plataformas" "$(echo "$pt" | g
 check "pagina: Plataformas mostra só o Side Quest" "$(echo "$pt" | grep -c 'SIDE QUEST' | tr -d ' ' | sed 's/^[1-9][0-9]*$/sim/')-$(echo "$pt" | grep -c -e 'EXITLAG' -e 'RULLER.CREW' | tr -d ' ')" "sim-0"
 pp="$(get_as teste "http://127.0.0.1:$PORT/produtos.php")"
 check "pagina: sem empresa, produtos.php abre" "$(code_as teste "http://127.0.0.1:$PORT/produtos.php")" "200"
+check "pagina: pontos.php abre com e sem empresa" "$(code_as a "http://127.0.0.1:$PORT/pontos.php") $(code_as teste "http://127.0.0.1:$PORT/pontos.php")" "200 200"
 check "pagina: Produtos mostra o catálogo e esconde o Ruller (em desenvolvimento)" "$(echo "$pp" | grep -c 'EXITLAG' | tr -d ' ' | sed 's/^[1-9][0-9]*$/sim/')-$(echo "$pp" | grep -c 'RULLER.CREW' | tr -d ' ')" "sim-0"
 
 # --- limite de uso: por usuário logado e por IP (o IP real atrás da CDN ainda não foi confirmado) ---

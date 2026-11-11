@@ -1,7 +1,7 @@
 DirectoryIndex index.html index.php
 ErrorDocument 404 /404.html
 
-# Área do cliente: as páginas (painel.php, entregas.php, produtos.php, plataformas.php) conferem o login.
+# Área do cliente: as páginas (painel.php, entregas.php, produtos.php, plataformas.php, pontos.php) conferem o login.
 # O arquivo .html do painel antigo e os arquivos internos de autenticação não podem ser abertos direto.
 # Na pasta da ponte com a Plataforma só o api.php abre pelo navegador; o resto (layout, cliente da API) é include.
 <IfModule mod_rewrite.c>

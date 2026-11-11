@@ -1,6 +1,6 @@
 <?php
 /**
- * Crew - barra lateral, barra de cima e rodapé da área logada do cliente (Início, Entregas, Produtos, Plataformas).
+ * Crew - barra lateral, barra de cima e rodapé da área logada do cliente (Início, Entregas, Produtos, Plataformas, Pontos).
  * Só a área logada usa este arquivo; o resto do site não muda. Cada página faz:
  *   require auth.php; require area/layout.php;
  *   $perfil = crew_area_exigir_login();           // porta de login (e de empresa)
@@ -19,8 +19,8 @@ function crew_area_asset(string $rel): string {
 }
 
 /**
- * Porta de login das páginas da área. Sem login: volta ao login (303). Usuário sem empresa só vê Produtos e
- * Plataformas: nas demais páginas ($exigirEmpresa) vai para plataformas.php. Devolve o perfil ['email', 'empresa'].
+ * Porta de login das páginas da área. Sem login: volta ao login (303). Usuário sem empresa só vê Produtos,
+ * Plataformas e Pontos: nas demais páginas ($exigirEmpresa) vai para plataformas.php. Devolve o perfil ['email', 'empresa'].
  */
 function crew_area_exigir_login(bool $exigirEmpresa = true): array {
     $perfil = crew_current_profile();
@@ -39,7 +39,7 @@ function crew_area_exigir_login(bool $exigirEmpresa = true): array {
 }
 
 /**
- * Abre a página: <head>, barra lateral com o menu da área e a conta, barra de cima com o título. $ativo: inicio, entregas, produtos ou plataformas.
+ * Abre a página: <head>, barra lateral com o menu da área e a conta, barra de cima com o título. $ativo: inicio, entregas, produtos, plataformas ou pontos.
  * A área logada tem cara de plataforma: não usa o menu, a barra lateral nem a foto do site (nem o main.js do site).
  */
 function crew_area_abrir(string $ativo, array $perfil, array $css = []): void {
@@ -48,6 +48,7 @@ function crew_area_abrir(string $ativo, array $perfil, array $css = []): void {
         'entregas' => 'Entregas',
         'produtos' => 'Produtos',
         'plataformas' => 'Plataformas',
+        'pontos' => 'Pontos e níveis',
     ];
     $titulo = $paginas[$ativo] ?? 'Área do cliente';
     $chaveTitulo = 'area.' . $ativo;
@@ -119,7 +120,7 @@ function crew_area_abrir(string $ativo, array $perfil, array $css = []): void {
 <div class="app-side__foot">
 <a class="app-side__site" href="index.html"><i data-lucide="globe"></i><span data-i18n="area.site">Ir para o site</span><i data-lucide="arrow-up-right"></i></a>
 <?php if (CREW_AREA_PLACAR && $temEmpresa) { ?>
-<a class="app-nivel" href="painel.php#pontos" data-nivel="<?= $nivel['atual'][0] ?>">
+<a class="app-nivel" href="pontos.php" data-nivel="<?= $nivel['atual'][0] ?>"<?= $ativo === 'pontos' ? ' aria-current="page"' : '' ?>>
 <span class="app-nivel__topo"><img class="app-nivel__selo" src="assets/img/niveis/<?= $nivel['atual'][0] ?>.png" alt="" width="32" height="32"><span class="app-nivel__nome"><span data-i18n="area.xp.nivel">Nível</span> <span data-i18n="area.nivel.<?= $nivel['atual'][0] ?>"><?= $nivel['atual'][1] ?></span></span><span class="app-nivel__xp"><?= crew_area_num($xp) ?> XP</span></span>
 <span class="app-nivel__barra" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="<?= $nivel['pct'] ?>"><span style="width: <?= $nivel['pct'] ?>%"></span></span>
 <?php if ($nivel['proximo']) { ?>
@@ -128,8 +129,8 @@ function crew_area_abrir(string $ativo, array $perfil, array $css = []): void {
 <span class="app-nivel__falta" data-i18n="area.xp.maximo">Você está no nível máximo.</span>
 <?php } ?>
 </a>
-<?php } elseif ($temEmpresa) { // os pontos são da empresa: sem empresa, nada de pontos ?>
-<a class="app-nivel" href="painel.php#pontos" data-nivel>
+<?php } else { // os pontos ficam só no menu, com página própria (Rafael, 2026-11-11) ?>
+<a class="app-nivel" href="pontos.php" data-nivel<?= $ativo === 'pontos' ? ' aria-current="page"' : '' ?>>
 <span class="app-nivel__topo"><i data-lucide="award"></i><span class="app-nivel__nome" data-i18n="area.xp.niveis">Pontos e níveis</span></span>
 <span class="app-nivel__falta" data-i18n="area.xp.embreve">Seus pontos começam a contar em breve.</span>
 </a>
@@ -153,7 +154,7 @@ function crew_area_abrir(string $ativo, array $perfil, array $css = []): void {
 <h1 class="app-top__h1" data-i18n="<?= $chaveTitulo ?>.title"><?= htmlspecialchars($titulo) ?></h1>
 </div>
 <?php if (CREW_AREA_PLACAR && $temEmpresa) { ?>
-<a class="app-xp" href="painel.php#pontos" data-nivel="<?= $nivel['atual'][0] ?>" title="Seus pontos de experiência" data-i18n-attr="title:area.xp.titulo"><img class="app-xp__selo" src="assets/img/niveis/<?= $nivel['atual'][0] ?>.png" alt="" width="20" height="20"><strong><?= crew_area_num($xp) ?></strong><span>XP</span><em data-i18n="area.nivel.<?= $nivel['atual'][0] ?>"><?= $nivel['atual'][1] ?></em></a>
+<a class="app-xp" href="pontos.php" data-nivel="<?= $nivel['atual'][0] ?>" title="Seus pontos de experiência" data-i18n-attr="title:area.xp.titulo"><img class="app-xp__selo" src="assets/img/niveis/<?= $nivel['atual'][0] ?>.png" alt="" width="20" height="20"><strong><?= crew_area_num($xp) ?></strong><span>XP</span><em data-i18n="area.nivel.<?= $nivel['atual'][0] ?>"><?= $nivel['atual'][1] ?></em></a>
 <?php } ?>
 <div class="crew-lang app-top__lang" role="group" aria-label="Idioma" data-i18n-attr="aria-label:lang.label">
 <button type="button" class="crew-lang__btn" data-lang-switch="pt">PT</button>
