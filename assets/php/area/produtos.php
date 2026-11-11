@@ -95,10 +95,10 @@ function crew_area_produtos(): array {
  * sobre nosso braço de SVAs e ao clicar nele, abre um popup contendo todos os nossos produtos e uma breve explicação deles").
  * Só muda a apresentação: cada SVA continua em crew_area_produtos(), com o texto, o estado e o XP de sempre.
  * Imagem: mosaico com as capas dos SVAs que já estão em assets/img/produtos/ (cada logo só reduzido, sem outra mudança).
+ * Sem selo sobre a foto: o selo cobria o logo da ExitLag, e a categoria "SVAs" já aparece logo abaixo da imagem.
  */
 function crew_area_svas_cartao(): array {
     return ['chave' => 'svas', 'nome' => 'SVAs DA CREW', 'categoria' => 'svas', 'cor' => '31 91 255', 'foto' => 'assets/img/produtos/svas-mosaico.png',
-            'tipo' => ['area.prod.tipo.svas', 'Valor adicionado', 'layers'],
             'texto' => 'Serviços de valor adicionado para o seu provedor incluir nos planos e oferecer mais aos assinantes. Clique para conhecer todos.'];
 }
 

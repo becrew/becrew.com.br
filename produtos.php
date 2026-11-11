@@ -99,7 +99,6 @@ crew_area_abrir('produtos', $perfil, ['assets/css/crew-entregas.css', 'assets/cs
 <article class="prod-card is-grupo" data-prod="<?= $sitGrupo ?>" data-cat="svas" data-dialogo-abrir="svas-dialogo" style="--prod-cor: <?= $grupo['cor'] ?>">
 <div class="prod-card__foto">
 <img alt="" src="<?= $grupo['foto'] ?>" loading="lazy">
-<span class="prod-card__tipo"><i data-lucide="<?= $grupo['tipo'][2] ?>"></i><span data-i18n="<?= $grupo['tipo'][0] ?>"><?= $grupo['tipo'][1] ?></span></span>
 </div>
 <div class="prod-card__corpo">
 <span class="prod-card__cat" data-i18n="area.prod.cat.svas"><?= $catRotulo ?></span>

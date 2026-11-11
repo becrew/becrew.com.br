@@ -291,6 +291,8 @@ foreach (['Produtos', 'Produtos sem empresa'] as $nome) {
     check("tela $nome: aba SVAs com um cartão só", preg_match('/data-prod-cat="svas"[^>]*>(?:(?!<\/button>).)*<b>1<\/b>/s', $h) === 1 && substr_count($h, 'data-cat="svas"') === 1);
     $cartaoSva = preg_match('/<article class="prod-card is-grupo"[^>]*data-cat="svas"(?:(?!<\/article>).)*<\/article>/s', $h, $mC) ? $mC[0] : '';
     check("tela $nome: cartão SVAs DA CREW explica o braço de SVAs", strpos($cartaoSva, '>SVAs DA CREW</h2>') !== false && strpos($cartaoSva, 'Serviços de valor adicionado para o seu provedor incluir nos planos e oferecer mais aos assinantes.') !== false);
+    // O selo sobre a foto cobria o logo da ExitLag no mosaico; o cartão dos SVAs fica sem selo (Rafael, 2026-11-11).
+    check("tela $nome: cartão dos SVAs sem selo sobre o mosaico", $cartaoSva !== '' && strpos($cartaoSva, 'prod-card__tipo') === false && strpos($cartaoSva, 'Valor adicionado') === false);
     check("tela $nome: cartão dos SVAs abre o popup", strpos($cartaoSva, 'data-dialogo-abrir="svas-dialogo"') !== false);
     check("tela $nome: nenhum SVA tem cartão próprio", preg_match('/<h2 class="prod-card__nome"[^>]*>(EXITLAG|ABYA GO|KASPERSKY|SOCIAL COMICS)<\/h2>/', $h) === 0);
     $dialogo = preg_match('/<dialog class="prod-dialogo" id="svas-dialogo"(?:(?!<\/dialog>).)*<\/dialog>/s', $h, $mD) ? $mD[0] : '';

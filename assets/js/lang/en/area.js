@@ -62,7 +62,6 @@ window.CREW_I18N = Object.assign(window.CREW_I18N || {}, {
   'area.prod.tipo.marketing': 'Marketing',
   'area.prod.tipo.esports': 'E-sports',
   'area.prod.tipo.nuvem': 'Cloud gaming',
-  'area.prod.tipo.svas': 'Value-added',
   'area.prod.svas.qtd': 'services',
   'area.prod.svas.ver': 'See all VAS',
   'area.prod.svas.titulo': 'Crew VAS',
