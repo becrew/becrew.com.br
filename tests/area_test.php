@@ -232,11 +232,11 @@ foreach (['Plataformas', 'Plataformas sem empresa'] as $nome) {
 // Produtos: três abas, Serviços, Games e SVAs (Rafael, 2026-11-11). Speakr vira Relatórios; Consultoria e Hub IPC "em breve"; Ruller oculto.
 check('categorias: Serviços, Games e SVAs', array_keys(crew_area_categorias()) === ['servicos', 'games', 'svas']);
 $cat = array_column(crew_area_produtos(), 'categoria', 'chave');
-check('produtos: cada um na aba certa', $cat === ['consultoria' => 'servicos', 'essencial' => 'servicos', 'profissional' => 'servicos', 'ruller' => 'servicos', 'ipc' => 'games', 'hubipc' => 'games', 'exitlag' => 'svas', 'kaspersky' => 'svas', 'socialcomics' => 'svas']);
+check('produtos: cada um na aba certa', $cat === ['consultoria' => 'servicos', 'essencial' => 'servicos', 'profissional' => 'servicos', 'ruller' => 'servicos', 'timeesports' => 'games', 'hubipc' => 'games', 'exitlag' => 'svas', 'kaspersky' => 'svas', 'socialcomics' => 'svas']);
 check('produtos: Speakr não está no catálogo', !isset($cat['speakr']));
 check('produtos: Ruller continua no catálogo, marcado como oculto', (array_column(crew_area_produtos(), null, 'chave')['ruller']['oculto'] ?? false) === true);
 check('produtos: nenhum tem link de acesso (o Side Quest é plataforma)', count(array_filter(array_column(crew_area_produtos(), 'link'))) === 0);
-$situacao = ['PLANO DE CONSULTORIA' => 'breve', 'PLANO ESSENCIAL' => 'contratar', 'PLANO PROFISSIONAL' => 'contratar', 'IPC' => 'contratar', 'HUB IPC' => 'breve', 'EXITLAG' => 'contratar', 'KASPERSKY' => 'breve', 'SOCIAL COMICS' => 'breve'];
+$situacao = ['PLANO DE CONSULTORIA' => 'breve', 'PLANO ESSENCIAL' => 'contratar', 'PLANO PROFISSIONAL' => 'contratar', 'TIME DE E-SPORTS' => 'contratar', 'HUB IPC' => 'breve', 'EXITLAG' => 'contratar', 'KASPERSKY' => 'breve', 'SOCIAL COMICS' => 'breve'];
 foreach (['Produtos', 'Produtos sem empresa'] as $nome) {
     $h = $telas[$nome];
     check("tela $nome: abas Serviços, Games e SVAs", strpos($h, 'data-prod-cat="servicos"') !== false && strpos($h, 'data-prod-cat="games"') !== false && strpos($h, 'data-prod-cat="svas"') !== false);
@@ -245,6 +245,9 @@ foreach (['Produtos', 'Produtos sem empresa'] as $nome) {
     foreach ($situacao as $prod => $sit) {
         check("tela $nome: $prod aparece como $sit", preg_match('/class="prod-card is-' . $sit . '"[^>]*>(?:(?!<\/article>).)*>' . preg_quote($prod, '/') . '<\/h2>/s', $h) === 1);
     }
+    // Games: o "IPC" virou o Time de E-Sports, igual ao Side Quest (Rafael, 2026-11-11; src/lib/products.ts e dashboard/produtos do Side Quest).
+    check("tela $nome: sem o cartão IPC", strpos($h, '>IPC</h2>') === false && strpos($h, 'IP Champions') === false);
+    check("tela $nome: Time de E-Sports com o texto do Side Quest", strpos($h, 'Patrocínio, presença em campeonatos e conteúdo com os jogadores.') !== false);
     check("tela $nome: sem Speakr, Ruller nem Side Quest", stripos($h, 'speakr') === false && strpos($h, 'RULLER.CREW') === false && strpos($h, 'side-quest') === false);
 }
 

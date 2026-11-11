@@ -61,10 +61,11 @@ function crew_area_produtos(): array {
          'cor' => '136 248 72', 'foto' => 'assets/img/painel-ruller.webp', 'xp' => 1000,
          'tipo' => ['area.prod.tipo.campanhas', 'Campanhas', 'target'],
          'texto' => 'Entre no <strong>Ruller</strong> e acompanhe o planejamento, as entregas e os indicadores das suas campanhas.', 'link' => null],
-        // Games. IPC: texto a partir do CLAUDE.md da Crew Gaming. Hub IPC "em breve" até Rafael mandar o texto (2026-11-11).
-        ['chave' => 'ipc', 'nome' => 'IPC', 'categoria' => 'games', 'cor' => '240 52 52', 'foto' => 'assets/img/comunidade-gamers.webp', 'xp' => 1000,
-         'tipo' => ['area.prod.tipo.campeonato', 'Campeonato de CS2', 'target'],
-         'texto' => 'A <strong>IPC (IP Champions)</strong> é a comunidade e o campeonato de Counter-Strike 2 entre provedores de internet, com a comunidade oficial no Discord.', 'link' => null],
+        // Games. Time de E-Sports: o mesmo produto e o mesmo texto do Side Quest (src/lib/products.ts, TIME_ESPORTS, e
+        // dashboard/produtos; Rafael, 2026-11-11). Hub IPC "em breve" até Rafael mandar o texto (2026-11-11).
+        ['chave' => 'timeesports', 'nome' => 'TIME DE E-SPORTS', 'categoria' => 'games', 'cor' => '240 52 52', 'foto' => 'assets/img/comunidade-gamers.webp', 'xp' => 1000,
+         'tipo' => ['area.prod.tipo.esports', 'E-sports', 'gamepad-2'],
+         'texto' => 'Patrocínio, presença em campeonatos e conteúdo com os jogadores.', 'link' => null],
         ['chave' => 'hubipc', 'nome' => 'HUB IPC', 'categoria' => 'games', 'breve' => true, 'cor' => '240 52 52', 'foto' => 'assets/img/post-gamers-streamer.webp', 'xp' => 1000,
          'tipo' => ['area.prod.tipo.games', 'Para gamers', 'zap'],
          'texto' => 'Um novo produto da Crew para o público gamer. Os detalhes chegam em breve.', 'link' => null],
