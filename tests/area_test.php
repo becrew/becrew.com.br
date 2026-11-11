@@ -229,10 +229,10 @@ foreach (['Plataformas', 'Plataformas sem empresa'] as $nome) {
     check("tela $nome: nenhum produto do catálogo", stripos($h, 'EXITLAG') === false && strpos($h, 'GAMING.CREW') === false && strpos($h, 'data-prod-cat') === false);
 }
 
-// Produtos: três abas, Serviços, Games e SVAs (Rafael, 2026-11-11). Speakr vira Relatórios; Consultoria "em breve"; Ruller oculto.
+// Produtos: três abas, Serviços, Games e SVAs (Rafael, 2026-11-11). Speakr vira Relatórios; Ruller oculto. Marketing num cartão só e Consultoria para ISPs com o que entrega (Rafael, 2026-11-11).
 check('categorias: Serviços, Games e SVAs', array_keys(crew_area_categorias()) === ['servicos', 'games', 'svas']);
 $cat = array_column(crew_area_produtos(), 'categoria', 'chave');
-check('produtos: cada um na aba certa', $cat === ['consultoria' => 'servicos', 'essencial' => 'servicos', 'profissional' => 'servicos', 'ruller' => 'servicos', 'timeesports' => 'games', 'hubipc' => 'games', 'exitlag' => 'svas', 'kaspersky' => 'svas', 'socialcomics' => 'svas']);
+check('produtos: cada um na aba certa', $cat === ['consultoria' => 'servicos', 'marketing' => 'servicos', 'ruller' => 'servicos', 'timeesports' => 'games', 'hubipc' => 'games', 'exitlag' => 'svas', 'kaspersky' => 'svas', 'socialcomics' => 'svas']);
 check('produtos: Speakr não está no catálogo', !isset($cat['speakr']));
 check('produtos: Ruller continua no catálogo, marcado como oculto', (array_column(crew_area_produtos(), null, 'chave')['ruller']['oculto'] ?? false) === true);
 // Time de E-Sports com a mesma imagem do Side Quest (public/headers/topo-playbook.png), em WebP (Rafael, 2026-11-11).
@@ -240,12 +240,12 @@ $fotoEsports = array_column(crew_area_produtos(), 'foto', 'chave')['timeesports'
 check('produtos: Time de E-Sports usa a imagem do Side Quest', $fotoEsports === 'assets/img/time-esports.webp');
 check('produtos: a imagem do Time de E-Sports existe e é WebP', is_file("$raiz/$fotoEsports") && substr((string) file_get_contents("$raiz/$fotoEsports", false, null, 8, 4), 0, 4) === 'WEBP');
 check('produtos: nenhum tem link de acesso (o Side Quest é plataforma)', count(array_filter(array_column(crew_area_produtos(), 'link'))) === 0);
-$situacao = ['PLANO DE CONSULTORIA' => 'breve', 'PLANO ESSENCIAL' => 'contratar', 'PLANO PROFISSIONAL' => 'contratar', 'TIME DE E-SPORTS' => 'contratar', 'HUB IPC' => 'contratar', 'EXITLAG' => 'contratar', 'KASPERSKY' => 'breve', 'SOCIAL COMICS' => 'breve'];
+$situacao = ['CONSULTORIA PARA ISPs' => 'contratar', 'MARKETING PARA ISPs' => 'contratar', 'TIME DE E-SPORTS' => 'contratar', 'HUB IPC' => 'contratar', 'EXITLAG' => 'contratar', 'KASPERSKY' => 'breve', 'SOCIAL COMICS' => 'breve'];
 foreach (['Produtos', 'Produtos sem empresa'] as $nome) {
     $h = $telas[$nome];
     check("tela $nome: abas Serviços, Games e SVAs", strpos($h, 'data-prod-cat="servicos"') !== false && strpos($h, 'data-prod-cat="games"') !== false && strpos($h, 'data-prod-cat="svas"') !== false);
     check("tela $nome: sem as abas antigas", strpos($h, 'data-prod-cat="gaming"') === false && strpos($h, 'data-prod-cat="agencia"') === false && strpos($h, 'data-prod-cat="tech"') === false);
-    check("tela $nome: oito cartões", substr_count($h, 'class="prod-card ') === 8);
+    check("tela $nome: sete cartões", substr_count($h, 'class="prod-card ') === 7);
     foreach ($situacao as $prod => $sit) {
         check("tela $nome: $prod aparece como $sit", preg_match('/class="prod-card is-' . $sit . '"[^>]*>(?:(?!<\/article>).)*>' . preg_quote($prod, '/') . '<\/h2>/s', $h) === 1);
     }
@@ -256,6 +256,11 @@ foreach (['Produtos', 'Produtos sem empresa'] as $nome) {
     check("tela $nome: Hub IPC explica o comparador de planos gamer", strpos($h, 'comparador de planos de internet gamer') !== false);
     check("tela $nome: Hub IPC chama o provedor para fazer parte", strpos($h, 'Coloque os planos gamer do seu provedor no Hub IPC e faça parte.') !== false);
     check("tela $nome: Hub IPC sem o texto provisório", strpos($h, 'Um novo produto da Crew para o público gamer') === false);
+    // Serviços: um cartão só de marketing, sem separar os planos, e a Consultoria para ISPs dizendo o que entrega (Rafael, 2026-11-11).
+    check("tela $nome: sem os planos Essencial e Profissional separados", strpos($h, 'PLANO ESSENCIAL') === false && strpos($h, 'PLANO PROFISSIONAL') === false && strpos($h, 'PLANO DE CONSULTORIA') === false);
+    check("tela $nome: Marketing para ISPs diz o que entrega", strpos($h, 'anúncios na Meta e no Google por área de cobertura') !== false);
+    check("tela $nome: Consultoria para ISPs diz o que entrega", strpos($h, 'Consultoria de gestão para o seu provedor, em seis frentes') !== false);
+    check("tela $nome: sem o texto provisório da Consultoria", strpos($h, 'Os detalhes chegam em breve') === false);
     check("tela $nome: sem Speakr, Ruller nem Side Quest", stripos($h, 'speakr') === false && strpos($h, 'RULLER.CREW') === false && strpos($h, 'side-quest') === false);
 }
 

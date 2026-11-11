@@ -47,16 +47,15 @@ function crew_area_categorias(): array {
  */
 function crew_area_produtos(): array {
     return [
-        // Serviços. Consultoria "em breve" e sem dizer o que entrega até os termos com a Camel fecharem (Rafael, 2026-11-11).
-        ['chave' => 'consultoria', 'nome' => 'PLANO DE CONSULTORIA', 'categoria' => 'servicos', 'breve' => true, 'cor' => '64 76 255', 'foto' => 'assets/img/equipe-crew.webp', 'xp' => 1000,
+        // Serviços (Rafael, 2026-11-11): o marketing num cartão só, sem separar Essencial e Profissional, e a Consultoria para ISPs
+        // dizendo o que entrega, as duas com "Quero contratar" e sem preço. Consultoria: o que o Plano de Consultoria entrega no deck
+        // da Crew Services (Co-CEO, 2026-10-29). Marketing: o Método Conquista da página marketing-para-provedores-de-internet.
+        ['chave' => 'consultoria', 'nome' => 'CONSULTORIA PARA ISPs', 'categoria' => 'servicos', 'cor' => '64 76 255', 'foto' => 'assets/img/equipe-crew.webp', 'xp' => 1000,
          'tipo' => ['area.prod.tipo.consultoria', 'Consultoria', 'bar-chart'],
-         'texto' => 'Um novo plano da Crew. Os detalhes chegam em breve.', 'link' => null],
-        ['chave' => 'essencial', 'nome' => 'PLANO ESSENCIAL', 'categoria' => 'servicos', 'cor' => '136 248 72', 'foto' => 'assets/img/equipe-metodo.webp', 'xp' => 1000,
+         'texto' => 'Consultoria de gestão para o seu provedor, em seis frentes: estratégia, comercial e vendas, pessoas e lideranças, processos, experiência do cliente e inteligência gerencial. Tráfego pago, site e landing page no mesmo contrato, com vendedor sob demanda.', 'link' => null],
+        ['chave' => 'marketing', 'nome' => 'MARKETING PARA ISPs', 'categoria' => 'servicos', 'cor' => '136 248 72', 'foto' => 'assets/img/equipe-metodo.webp', 'xp' => 1000,
          'tipo' => ['area.prod.tipo.marketing', 'Marketing', 'megaphone'],
-         'texto' => 'Plano de marketing da Crew para o seu provedor. Fale com a gente para conhecer o que ele inclui.', 'link' => null],
-        ['chave' => 'profissional', 'nome' => 'PLANO PROFISSIONAL', 'categoria' => 'servicos', 'cor' => '136 248 72', 'foto' => 'assets/img/equipe-resultados.webp', 'xp' => 1000,
-         'tipo' => ['area.prod.tipo.marketing', 'Marketing', 'megaphone'],
-         'texto' => 'Plano de marketing da Crew para o seu provedor. Fale com a gente para saber o que ele inclui e comparar com o Essencial.', 'link' => null],
+         'texto' => 'Marketing para o seu provedor conquistar assinantes: diagnóstico, site com consulta de viabilidade, anúncios na Meta e no Google por área de cobertura e custo por instalação acompanhado todo mês.', 'link' => null],
         ['chave' => 'ruller', 'nome' => 'RULLER.CREW', 'categoria' => 'servicos', 'oculto' => true, // plataforma em desenvolvimento (Rafael, 2026-10-30)
          'cor' => '136 248 72', 'foto' => 'assets/img/painel-ruller.webp', 'xp' => 1000,
          'tipo' => ['area.prod.tipo.campanhas', 'Campanhas', 'target'],
