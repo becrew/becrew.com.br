@@ -232,7 +232,7 @@ foreach (['Plataformas', 'Plataformas sem empresa'] as $nome) {
 // Produtos: três abas, Serviços, Games e SVAs (Rafael, 2026-11-11). Speakr vira Relatórios; Ruller oculto. Marketing num cartão só e Consultoria com o que entrega (Rafael, 2026-11-11).
 check('categorias: Serviços, Games e SVAs', array_keys(crew_area_categorias()) === ['servicos', 'games', 'svas']);
 $cat = array_column(crew_area_produtos(), 'categoria', 'chave');
-check('produtos: cada um na aba certa', $cat === ['consultoria' => 'servicos', 'marketing' => 'servicos', 'ruller' => 'servicos', 'timeesports' => 'games', 'hubipc' => 'games', 'exitlag' => 'svas', 'kaspersky' => 'svas', 'socialcomics' => 'svas']);
+check('produtos: cada um na aba certa', $cat === ['consultoria' => 'servicos', 'marketing' => 'servicos', 'ruller' => 'servicos', 'timeesports' => 'games', 'hubipc' => 'games', 'exitlag' => 'svas', 'abyago' => 'svas', 'kaspersky' => 'svas', 'socialcomics' => 'svas']);
 check('produtos: Speakr não está no catálogo', !isset($cat['speakr']));
 check('produtos: Ruller continua no catálogo, marcado como oculto', (array_column(crew_area_produtos(), null, 'chave')['ruller']['oculto'] ?? false) === true);
 // Time de E-Sports com a mesma imagem do Side Quest (public/headers/topo-playbook.png), em WebP (Rafael, 2026-11-11).
@@ -241,13 +241,14 @@ check('produtos: Time de E-Sports usa a imagem do Side Quest', $fotoEsports === 
 check('produtos: a imagem do Time de E-Sports existe e é WebP', is_file("$raiz/$fotoEsports") && substr((string) file_get_contents("$raiz/$fotoEsports", false, null, 8, 4), 0, 4) === 'WEBP');
 $en = (string) file_get_contents("$raiz/assets/js/lang/en/area.js");
 check('inglês: Consultoria e Marketing sem "for ISPs"', stripos($en, 'for ISPs') === false && strpos($en, "'painel.consultoria.title': 'CONSULTING'") !== false && strpos($en, "'painel.marketing.title': 'MARKETING'") !== false);
+check('inglês: Abya Go com o crédito "Abya technology"', strpos($en, "'painel.abyago.title': 'ABYA GO'") !== false && stripos($en, 'white-label') !== false && strpos($en, 'Abya technology.') !== false);
 check('produtos: nenhum tem link de acesso (o Side Quest é plataforma)', count(array_filter(array_column(crew_area_produtos(), 'link'))) === 0);
-$situacao = ['CONSULTORIA' => 'contratar', 'MARKETING' => 'contratar', 'TIME DE E-SPORTS' => 'contratar', 'HUB IPC' => 'contratar', 'EXITLAG' => 'contratar', 'KASPERSKY' => 'breve', 'SOCIAL COMICS' => 'breve'];
+$situacao = ['CONSULTORIA' => 'contratar', 'MARKETING' => 'contratar', 'TIME DE E-SPORTS' => 'contratar', 'HUB IPC' => 'contratar', 'EXITLAG' => 'contratar', 'ABYA GO' => 'contratar', 'KASPERSKY' => 'breve', 'SOCIAL COMICS' => 'breve'];
 foreach (['Produtos', 'Produtos sem empresa'] as $nome) {
     $h = $telas[$nome];
     check("tela $nome: abas Serviços, Games e SVAs", strpos($h, 'data-prod-cat="servicos"') !== false && strpos($h, 'data-prod-cat="games"') !== false && strpos($h, 'data-prod-cat="svas"') !== false);
     check("tela $nome: sem as abas antigas", strpos($h, 'data-prod-cat="gaming"') === false && strpos($h, 'data-prod-cat="agencia"') === false && strpos($h, 'data-prod-cat="tech"') === false);
-    check("tela $nome: sete cartões", substr_count($h, 'class="prod-card ') === 7);
+    check("tela $nome: oito cartões", substr_count($h, 'class="prod-card ') === 8);
     foreach ($situacao as $prod => $sit) {
         check("tela $nome: $prod aparece como $sit", preg_match('/class="prod-card is-' . $sit . '"[^>]*>(?:(?!<\/article>).)*>' . preg_quote($prod, '/') . '<\/h2>/s', $h) === 1);
     }
@@ -264,6 +265,12 @@ foreach (['Produtos', 'Produtos sem empresa'] as $nome) {
     check("tela $nome: Consultoria diz o que entrega", strpos($h, 'Consultoria de gestão para o seu provedor, em seis frentes') !== false);
     check("tela $nome: sem o texto provisório da Consultoria", strpos($h, 'Os detalhes chegam em breve') === false);
     check("tela $nome: nomes sem \"para ISPs\"", stripos($h, 'para ISPs') === false);
+    // SVAs: Abya Go, aprovado pela Abya (Rafael, 2026-11-11). Crédito "Tecnologia Abya" obrigatório; sem preço; logo ainda não veio.
+    $abya = preg_match('/<article class="prod-card is-contratar" data-prod="contratar" data-cat="svas"(?:(?!<\/article>).)*>ABYA GO<\/h2>(?:(?!<\/article>).)*<\/article>/s', $h, $mAbya) ? $mAbya[0] : '';
+    check("tela $nome: Abya Go em SVAs, com \"Quero contratar\"", $abya !== '' && strpos($abya, 'Quero contratar') !== false);
+    check("tela $nome: Abya Go é white label e dá o crédito \"Tecnologia Abya\"", strpos($abya, 'white label') !== false && strpos($abya, 'Tecnologia Abya.') !== false);
+    check("tela $nome: Abya Go sem preço e sem \"em breve\"", $abya !== '' && strpos($abya, 'R$') === false && stripos($abya, 'em breve') === false);
+    check("tela $nome: Abya Go com o ícone de gamepad enquanto o logo não vem", strpos($abya, 'prod-card__foto is-marca') !== false && strpos($abya, 'data-lucide="gamepad-2"') !== false);
     check("tela $nome: sem Speakr, Ruller nem Side Quest", stripos($h, 'speakr') === false && strpos($h, 'RULLER.CREW') === false && strpos($h, 'side-quest') === false);
 }
 

@@ -74,6 +74,12 @@ function crew_area_produtos(): array {
         ['chave' => 'exitlag', 'nome' => 'EXITLAG', 'categoria' => 'svas', 'cor' => '230 30 40', 'foto' => 'assets/img/produtos/exitlag.png', 'icone' => 'gamepad-2', 'xp' => 300,
          'tipo' => ['area.prod.tipo.games', 'Para gamers', 'zap'],
          'texto' => 'Ofereça o <strong>ExitLag</strong> aos seus assinantes: menos lag e ping mais estável nos jogos online, como serviço de valor agregado no plano.', 'link' => null],
+        // Abya Go: aprovado pela Abya (Rafael, 2026-11-11). O contrato exige o crédito "Tecnologia Abya" e proíbe falar em nome dela
+        // sem aprovação: o texto é o aprovado, sem promessa, latência, número de jogos nem editoras. Sem logo por enquanto: 'foto' => null
+        // mostra a capa com a cor e o ícone; quando Rafael mandar o logo, é só apontar 'foto' para assets/img/produtos/abyago.png.
+        ['chave' => 'abyago', 'nome' => 'ABYA GO', 'categoria' => 'svas', 'cor' => '92 60 210', 'foto' => null, 'icone' => 'gamepad-2', 'xp' => 300,
+         'tipo' => ['area.prod.tipo.nuvem', 'Jogos na nuvem', 'monitor-play'],
+         'texto' => 'Plataforma white label de jogos na nuvem: seu provedor oferece jogos por assinatura mensal com a própria marca, com catálogo de títulos e pacotes extras de conteúdo. Tecnologia Abya.', 'link' => null],
         ['chave' => 'kaspersky', 'nome' => 'KASPERSKY', 'categoria' => 'svas', 'cor' => '0 152 129', 'foto' => 'assets/img/produtos/kaspersky.png', 'icone' => 'shield', 'xp' => 300, 'breve' => true,
          'tipo' => ['area.prod.tipo.seguranca', 'Segurança digital', 'lock'],
          'texto' => 'Ofereça o <strong>Kaspersky</strong> aos seus assinantes: proteção contra vírus, golpes e ameaças online, incluída no plano de internet.', 'link' => null],
