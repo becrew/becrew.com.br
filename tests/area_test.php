@@ -229,7 +229,7 @@ foreach (['Plataformas', 'Plataformas sem empresa'] as $nome) {
     check("tela $nome: nenhum produto do catálogo", stripos($h, 'EXITLAG') === false && strpos($h, 'GAMING.CREW') === false && strpos($h, 'data-prod-cat') === false);
 }
 
-// Produtos: três abas, Serviços, Games e SVAs (Rafael, 2026-11-11). Speakr vira Relatórios; Consultoria e Hub IPC "em breve"; Ruller oculto.
+// Produtos: três abas, Serviços, Games e SVAs (Rafael, 2026-11-11). Speakr vira Relatórios; Consultoria "em breve"; Ruller oculto.
 check('categorias: Serviços, Games e SVAs', array_keys(crew_area_categorias()) === ['servicos', 'games', 'svas']);
 $cat = array_column(crew_area_produtos(), 'categoria', 'chave');
 check('produtos: cada um na aba certa', $cat === ['consultoria' => 'servicos', 'essencial' => 'servicos', 'profissional' => 'servicos', 'ruller' => 'servicos', 'timeesports' => 'games', 'hubipc' => 'games', 'exitlag' => 'svas', 'kaspersky' => 'svas', 'socialcomics' => 'svas']);
@@ -240,7 +240,7 @@ $fotoEsports = array_column(crew_area_produtos(), 'foto', 'chave')['timeesports'
 check('produtos: Time de E-Sports usa a imagem do Side Quest', $fotoEsports === 'assets/img/time-esports.webp');
 check('produtos: a imagem do Time de E-Sports existe e é WebP', is_file("$raiz/$fotoEsports") && substr((string) file_get_contents("$raiz/$fotoEsports", false, null, 8, 4), 0, 4) === 'WEBP');
 check('produtos: nenhum tem link de acesso (o Side Quest é plataforma)', count(array_filter(array_column(crew_area_produtos(), 'link'))) === 0);
-$situacao = ['PLANO DE CONSULTORIA' => 'breve', 'PLANO ESSENCIAL' => 'contratar', 'PLANO PROFISSIONAL' => 'contratar', 'TIME DE E-SPORTS' => 'contratar', 'HUB IPC' => 'breve', 'EXITLAG' => 'contratar', 'KASPERSKY' => 'breve', 'SOCIAL COMICS' => 'breve'];
+$situacao = ['PLANO DE CONSULTORIA' => 'breve', 'PLANO ESSENCIAL' => 'contratar', 'PLANO PROFISSIONAL' => 'contratar', 'TIME DE E-SPORTS' => 'contratar', 'HUB IPC' => 'contratar', 'EXITLAG' => 'contratar', 'KASPERSKY' => 'breve', 'SOCIAL COMICS' => 'breve'];
 foreach (['Produtos', 'Produtos sem empresa'] as $nome) {
     $h = $telas[$nome];
     check("tela $nome: abas Serviços, Games e SVAs", strpos($h, 'data-prod-cat="servicos"') !== false && strpos($h, 'data-prod-cat="games"') !== false && strpos($h, 'data-prod-cat="svas"') !== false);
@@ -252,6 +252,10 @@ foreach (['Produtos', 'Produtos sem empresa'] as $nome) {
     // Games: o "IPC" virou o Time de E-Sports, igual ao Side Quest (Rafael, 2026-11-11; src/lib/products.ts e dashboard/produtos do Side Quest).
     check("tela $nome: sem o cartão IPC", strpos($h, '>IPC</h2>') === false && strpos($h, 'IP Champions') === false);
     check("tela $nome: Time de E-Sports com o texto do Side Quest", strpos($h, 'Patrocínio, presença em campeonatos e conteúdo com os jogadores.') !== false);
+    // Hub IPC: comparador de planos gamer, com o chamado para o provedor fazer parte e o botão "Quero contratar" (Rafael, 2026-11-11).
+    check("tela $nome: Hub IPC explica o comparador de planos gamer", strpos($h, 'comparador de planos de internet gamer') !== false);
+    check("tela $nome: Hub IPC chama o provedor para fazer parte", strpos($h, 'Coloque os planos gamer do seu provedor no Hub IPC e faça parte.') !== false);
+    check("tela $nome: Hub IPC sem o texto provisório", strpos($h, 'Um novo produto da Crew para o público gamer') === false);
     check("tela $nome: sem Speakr, Ruller nem Side Quest", stripos($h, 'speakr') === false && strpos($h, 'RULLER.CREW') === false && strpos($h, 'side-quest') === false);
 }
 

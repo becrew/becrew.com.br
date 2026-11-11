@@ -74,7 +74,7 @@ window.CREW_I18N = Object.assign(window.CREW_I18N || {}, {
   'painel.timeesports.title': 'E-SPORTS TEAM',
   'painel.timeesports.text': 'Sponsorship, presence in tournaments and content with the players.',
   'painel.hubipc.title': 'HUB IPC',
-  'painel.hubipc.text': 'A new Crew product for gamers. Details coming soon.',
+  'painel.hubipc.text': '<strong>Hub IPC</strong> is a comparison site for gaming internet plans: players search and compare plans made for gaming. Put your provider\'s gaming plans on Hub IPC and be part of it.',
   'painel.exitlag.title': 'EXITLAG',
   'painel.exitlag.text': 'Offer <strong>ExitLag</strong> to your subscribers: less lag and steadier ping in online games, as a value-added service in the plan.',
   'painel.kaspersky.title': 'KASPERSKY',

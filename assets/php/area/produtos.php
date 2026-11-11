@@ -62,13 +62,14 @@ function crew_area_produtos(): array {
          'tipo' => ['area.prod.tipo.campanhas', 'Campanhas', 'target'],
          'texto' => 'Entre no <strong>Ruller</strong> e acompanhe o planejamento, as entregas e os indicadores das suas campanhas.', 'link' => null],
         // Games. Time de E-Sports: o mesmo produto e o mesmo texto do Side Quest (src/lib/products.ts, TIME_ESPORTS, e
-        // dashboard/produtos; Rafael, 2026-11-11). A foto é a do Side Quest (public/headers/topo-playbook.png), em WebP. Hub IPC "em breve" até Rafael mandar o texto (2026-11-11).
+        // dashboard/produtos; Rafael, 2026-11-11). A foto é a do Side Quest (public/headers/topo-playbook.png), em WebP.
         ['chave' => 'timeesports', 'nome' => 'TIME DE E-SPORTS', 'categoria' => 'games', 'cor' => '240 52 52', 'foto' => 'assets/img/time-esports.webp', 'xp' => 1000,
          'tipo' => ['area.prod.tipo.esports', 'E-sports', 'gamepad-2'],
          'texto' => 'Patrocínio, presença em campeonatos e conteúdo com os jogadores.', 'link' => null],
-        ['chave' => 'hubipc', 'nome' => 'HUB IPC', 'categoria' => 'games', 'breve' => true, 'cor' => '240 52 52', 'foto' => 'assets/img/post-gamers-streamer.webp', 'xp' => 1000,
+        // Hub IPC: comparador de planos gamer (gaminghub.com.br), com o chamado para o provedor fazer parte e "Quero contratar" (Rafael, 2026-11-11).
+        ['chave' => 'hubipc', 'nome' => 'HUB IPC', 'categoria' => 'games', 'cor' => '240 52 52', 'foto' => 'assets/img/post-gamers-streamer.webp', 'xp' => 1000,
          'tipo' => ['area.prod.tipo.games', 'Para gamers', 'zap'],
-         'texto' => 'Um novo produto da Crew para o público gamer. Os detalhes chegam em breve.', 'link' => null],
+         'texto' => 'O <strong>Hub IPC</strong> é um comparador de planos de internet gamer: o jogador busca e compara os planos feitos para jogar. Coloque os planos gamer do seu provedor no Hub IPC e faça parte.', 'link' => null],
         // SVAs: serviços de valor agregado para o provedor oferecer aos assinantes. Capa = logo da marca no fundo dela, 800x600, logo centralizado com a mesma largura.
         // Sem foto ('foto' => null), a capa usa a cor e o ícone.
         ['chave' => 'exitlag', 'nome' => 'EXITLAG', 'categoria' => 'svas', 'cor' => '230 30 40', 'foto' => 'assets/img/produtos/exitlag.png', 'icone' => 'gamepad-2', 'xp' => 300,
