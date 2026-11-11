@@ -39,12 +39,11 @@
 .prod-vazio[hidden] { display: none; }
 @media (prefers-reduced-motion: reduce) { .prod-card, .prod-card:hover { transition: none; transform: none; } }
 
-/* ---- Categorias: as frentes do CRM, com as cores de lá (Consultoria ainda não tem cor no CRM) ---- */
+/* ---- Abas de Produtos: Serviços, Games e SVAs, com as cores das frentes no CRM (Agência, Gaming e Tech) ---- */
 .prod-cats, .prod-card { --cat-cor: var(--app-text); }
-[data-prod-cat="gaming"], [data-cat="gaming"] { --cat-cor: #D0201A; }
-[data-prod-cat="agencia"], [data-cat="agencia"] { --cat-cor: #111111; }
-[data-prod-cat="consultoria"], [data-cat="consultoria"] { --cat-cor: #7A4DFF; }
-[data-prod-cat="tech"], [data-cat="tech"] { --cat-cor: #1F5BFF; }
+[data-prod-cat="servicos"], [data-cat="servicos"] { --cat-cor: #111111; }
+[data-prod-cat="games"], [data-cat="games"] { --cat-cor: #D0201A; }
+[data-prod-cat="svas"], [data-cat="svas"] { --cat-cor: #1F5BFF; }
 
 .prod-cats { display: flex; gap: .25rem; overflow-x: auto; scrollbar-width: none; border-bottom: 1px solid var(--app-line); }
 .prod-cats::-webkit-scrollbar { display: none; }
@@ -93,3 +92,49 @@
 .prod-card__xp.is-breve svg { color: var(--app-muted); }
 .prod-card__xpbreve { display: inline-flex; align-items: center; gap: .3rem; padding: .45rem .7rem; border-radius: 10px; background: var(--app-surface-2); color: var(--app-muted); font: 600 12px/1 var(--font-body); }
 .prod-card__xpbreve svg { width: 13px; height: 13px; }
+
+/* SVAs num cartão só (Rafael, 2026-11-11): o cartão abre o popup com todos. O cartão inteiro é clicável; o botão é o caminho pelo teclado. */
+.prod-card.is-grupo { cursor: pointer; }
+.prod-card.is-grupo .prod-card__foto img { object-fit: cover; }
+
+/* Popup (<dialog> modal): caixa centralizada, rolagem interna; no celular ocupa quase a tela toda. */
+.prod-dialogo {
+    width: min(760px, calc(100vw - 32px)); max-height: min(88vh, 900px); max-height: min(88dvh, 900px);
+    padding: 0; border: 0; border-radius: var(--app-radius); background: var(--app-surface); color: var(--app-text);
+    box-shadow: 0 24px 60px rgba(17,17,19,.25); overflow: hidden;
+}
+.prod-dialogo[open] { display: flex; flex-direction: column; }
+.prod-dialogo::backdrop { background: rgba(17,17,19,.55); }
+html.tem-dialogo { overflow: hidden; }
+.prod-dialogo__caixa { display: flex; flex-direction: column; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+.prod-dialogo__topo {
+    position: sticky; top: 0; z-index: 1; display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem;
+    padding: 1.25rem 1.25rem 1rem; background: var(--app-surface); border-bottom: 1px solid var(--app-line);
+}
+.prod-dialogo__titulo { margin: .35rem 0 .35rem; font: 700 1.35rem/1.2 var(--font-display); color: var(--app-text); }
+.prod-dialogo__intro { margin: 0; font-size: 14px; line-height: 1.5; color: var(--app-muted); }
+.prod-dialogo__fechar {
+    flex: none; display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px;
+    border: 1px solid var(--app-line); border-radius: 10px; background: var(--app-surface); color: var(--app-text); cursor: pointer;
+}
+.prod-dialogo__fechar:hover { border-color: var(--app-line-2); background: var(--app-surface-2); }
+.prod-dialogo__fechar:focus-visible { outline: 2px solid var(--app-text); outline-offset: 2px; }
+.prod-dialogo__fechar svg { width: 18px; height: 18px; }
+
+.prod-svas { list-style: none; margin: 0; padding: 1rem 1.25rem 1.25rem; display: grid; gap: .9rem; }
+.prod-sva {
+    display: grid; grid-template-columns: 168px 1fr; gap: 1rem; align-items: start;
+    padding: .9rem; border: 1px solid var(--app-line); border-radius: 12px; background: var(--app-surface);
+}
+.prod-sva__logo { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block; border-radius: 8px; border-bottom: 3px solid rgb(var(--prod-cor)); }
+.prod-sva.is-breve .prod-sva__logo { filter: saturate(.55); opacity: .75; }
+.prod-sva__corpo { display: flex; flex-direction: column; gap: .45rem; min-width: 0; }
+.prod-sva__nome { margin: 0; font: 700 1rem/1.2 var(--font-display); letter-spacing: .01em; color: var(--app-text); }
+.prod-sva__texto { margin: 0; font-size: 14px; line-height: 1.5; color: var(--app-muted); }
+.prod-sva__texto strong { color: var(--app-text); }
+.prod-sva .prod-card__pe { padding-top: .7rem; }
+@media (max-width: 560px) {
+    .prod-dialogo { width: calc(100vw - 16px); max-height: calc(100dvh - 16px); }
+    .prod-sva { grid-template-columns: 1fr; }
+    .prod-sva__logo { max-width: 220px; }
+}

@@ -1,8 +1,8 @@
 <?php
 /**
- * Crew - catálogo de produtos da área do cliente e a pontuação (XP) que vem deles.
+ * Crew - plataformas e catálogo de produtos da área do cliente, e a pontuação (XP) que vem deles.
  * A empresa soma pontos de experiência; os pontos definem o nível. Benefícios por nível virão depois.
- * Usado pelo layout (pontos na barra de cima e na lateral), pelo Início e pela vitrine de Produtos.
+ * Usado pelo layout (pontos na barra de cima e na lateral), pelo Início (painel de pontos), por Plataformas e por Produtos.
  */
 if (!defined('CREW_AUTH')) { http_response_code(404); exit; }
 
@@ -10,49 +10,96 @@ if (!defined('CREW_AUTH')) { http_response_code(404); exit; }
  * Etapa 1 dos pontos (decisão de Rafael, 2026-10-30): os níveis ficam à vista, mas o placar ainda não conta.
  * CREW_AREA_PLACAR: XP da empresa, nível atual, barra, XP de cada produto e limites dos níveis. Liga quando os
  *   pontos vierem da Plataforma, por empresa; a conta abaixo (crew_area_xp) ainda é a provisória do catálogo.
- *   Regra aprovada (Rafael, 2026-10-30): pontos = lucro bruto que a empresa gerou para a Crew, acumulado mês a mês.
+ *   Regra aprovada (Rafael, 2026-10-30): plano contratado 1.000, SVA 300 e licenças em faixas, acumulados; a Plataforma
+ *   calcula (pedido 2026-10-30_de-site_para-plataforma_pontos-e-produtos-da-empresa.md). O 'xp' do catálogo segue a mesma régua.
  * CREW_AREA_BENEFICIOS: benefícios de cada nível. Liga quando Rafael decidir os benefícios.
  */
 const CREW_AREA_PLACAR = false;
 const CREW_AREA_BENEFICIOS = false;
 
-/* Categorias, na ordem do CRM (as frentes). [chave => [rótulo PT, ícone]]. O Speakr saiu da vitrine (vira a aba Relatórios), e com ele a Consultoria. */
+/*
+ * Plataformas: o que o cliente acessa com o login da própria plataforma (Rafael, 2026-11-11: "em plataformas deve
+ * ficar apenas a side quest"). O botão aparece para todos, sem o selo "Contratado": o acesso é pelo login do Side Quest.
+ */
+function crew_area_plataformas(): array {
+    return [
+        ['chave' => 'sidequest', 'nome' => 'SIDE QUEST', 'cor' => '240 52 52', 'foto' => 'assets/img/painel-gaming.webp',
+         'tipo' => ['area.prod.tipo.comunidade', 'Comunidade gamer', 'users'],
+         'texto' => 'Entre no <strong>Side Quest</strong> e acompanhe as missões, a comunidade gamer e os resultados das ações da sua marca.', 'link' => 'https://side-quest-drab-two.vercel.app/dashboard'],
+    ];
+}
+
+/* Abas de Produtos (Rafael, 2026-11-11): Serviços, Games e SVAs. [chave => [rótulo PT, ícone]]. O Speakr vira a aba Relatórios. */
 function crew_area_categorias(): array {
     return [
-        'gaming' => ['Gaming', 'gamepad-2'],
-        'agencia' => ['Agência', 'megaphone'],
-        'tech' => ['Tech', 'cpu'],
+        'servicos' => ['Serviços', 'megaphone'],
+        'games' => ['Games', 'gamepad-2'],
+        'svas' => ['SVAs', 'cpu'],
     ];
 }
 
 /*
- * Produtos. 'link' = endereço do botão Acessar, para quando o produto estiver contratado (crew_area_contratado).
+ * Produtos, por aba. Nenhum tem 'link': "Contratado" e "Acessar" voltam quando o contratado vier da Plataforma (etapa 3).
  * 'breve' => true = ainda não está à venda: aparece com "Em breve", sem botão de contratar.
  * 'oculto' => true = fica fora da vitrine (a plataforma do produto ainda está em desenvolvimento).
- * 'xp' = pontos que o produto soma quando contratado. Os textos (nome, descrição) são os de painel.* em
- * assets/js/lang/en/painel.js; 'tipo' é a etiqueta sobre a foto.
+ * 'xp' = pontos que o produto soma quando contratado (plano 1.000, SVA 300). Os textos em inglês ficam em
+ * assets/js/lang/en/area.js (painel.<chave>.title e .text); 'tipo' é a etiqueta sobre a foto. Nenhum preço no cartão.
  */
 function crew_area_produtos(): array {
     return [
-        ['chave' => 'gaming', 'nome' => 'GAMING.CREW', 'categoria' => 'gaming', 'cor' => '240 52 52', 'foto' => 'assets/img/painel-gaming.webp', 'xp' => 1500,
-         'tipo' => ['area.prod.tipo.comunidade', 'Comunidade gamer', 'users'],
-         'texto' => 'Entre no <strong>Side Quest</strong> e acompanhe as missões, a comunidade gamer e os resultados das ações da sua marca.', 'link' => 'https://side-quest-drab-two.vercel.app/dashboard'],
-        ['chave' => 'ruller', 'nome' => 'RULLER.CREW', 'categoria' => 'agencia', 'oculto' => true, // plataforma em desenvolvimento (Rafael, 2026-10-30)
+        // Serviços (Rafael, 2026-11-11): o marketing num cartão só, sem separar Essencial e Profissional, e a Consultoria
+        // dizendo o que entrega, as duas com "Quero contratar" e sem preço; nomes sem "para ISPs" (Rafael, 2026-11-11). Consultoria: o que o Plano de Consultoria entrega no deck
+        // da Crew Services (Co-CEO, 2026-10-29). Marketing: o Método Conquista da página marketing-para-provedores-de-internet.
+        ['chave' => 'consultoria', 'nome' => 'CONSULTORIA', 'categoria' => 'servicos', 'cor' => '64 76 255', 'foto' => 'assets/img/equipe-crew.webp', 'xp' => 1000,
+         'tipo' => ['area.prod.tipo.consultoria', 'Consultoria', 'bar-chart'],
+         'texto' => 'Consultoria de gestão para o seu provedor, em seis frentes: estratégia, comercial e vendas, pessoas e lideranças, processos, experiência do cliente e inteligência gerencial. Tráfego pago, site e landing page no mesmo contrato, com vendedor sob demanda.', 'link' => null],
+        ['chave' => 'marketing', 'nome' => 'MARKETING', 'categoria' => 'servicos', 'cor' => '136 248 72', 'foto' => 'assets/img/equipe-metodo.webp', 'xp' => 1000,
+         'tipo' => ['area.prod.tipo.marketing', 'Marketing', 'megaphone'],
+         'texto' => 'Marketing para o seu provedor conquistar assinantes: diagnóstico, site com consulta de viabilidade, anúncios na Meta e no Google por área de cobertura e custo por instalação acompanhado todo mês.', 'link' => null],
+        ['chave' => 'ruller', 'nome' => 'RULLER.CREW', 'categoria' => 'servicos', 'oculto' => true, // plataforma em desenvolvimento (Rafael, 2026-10-30)
          'cor' => '136 248 72', 'foto' => 'assets/img/painel-ruller.webp', 'xp' => 1000,
          'tipo' => ['area.prod.tipo.campanhas', 'Campanhas', 'target'],
          'texto' => 'Entre no <strong>Ruller</strong> e acompanhe o planejamento, as entregas e os indicadores das suas campanhas.', 'link' => null],
-        // Tech: serviços de valor agregado para o provedor oferecer aos assinantes. Capa = logo da marca no fundo dela, 800x600, logo centralizado com a mesma largura.
+        // Games. Time de E-Sports: o mesmo produto e o mesmo texto do Side Quest (src/lib/products.ts, TIME_ESPORTS, e
+        // dashboard/produtos; Rafael, 2026-11-11). A foto é a do Side Quest (public/headers/topo-playbook.png), em WebP.
+        ['chave' => 'timeesports', 'nome' => 'TIME DE E-SPORTS', 'categoria' => 'games', 'cor' => '240 52 52', 'foto' => 'assets/img/time-esports.webp', 'xp' => 1000,
+         'tipo' => ['area.prod.tipo.esports', 'E-sports', 'gamepad-2'],
+         'texto' => 'Crie a equipe de e-sports do seu provedor para competir em campeonatos e marcar presença na comunidade gamer. Patrocínio, presença em campeonatos e conteúdo com os jogadores.', 'link' => null],
+        // Hub IPC: comparador de planos gamer (gaminghub.com.br), com o chamado para o provedor fazer parte e "Quero contratar" (Rafael, 2026-11-11).
+        ['chave' => 'hubipc', 'nome' => 'HUB IPC', 'categoria' => 'games', 'cor' => '240 52 52', 'foto' => 'assets/img/post-gamers-streamer.webp', 'xp' => 1000,
+         'tipo' => ['area.prod.tipo.games', 'Para gamers', 'zap'],
+         'texto' => 'O <strong>Hub IPC</strong> é um comparador de planos de internet gamer: o jogador busca e compara os planos feitos para jogar. Coloque os planos gamer do seu provedor no Hub IPC e faça parte.', 'link' => null],
+        // SVAs: serviços de valor agregado para o provedor oferecer aos assinantes. Capa = logo da marca no fundo dela, 800x600, logo centralizado com a mesma largura.
         // Sem foto ('foto' => null), a capa usa a cor e o ícone.
-        ['chave' => 'exitlag', 'nome' => 'EXITLAG', 'categoria' => 'tech', 'cor' => '230 30 40', 'foto' => 'assets/img/produtos/exitlag.png', 'icone' => 'gamepad-2', 'xp' => 500,
+        ['chave' => 'exitlag', 'nome' => 'EXITLAG', 'categoria' => 'svas', 'cor' => '230 30 40', 'foto' => 'assets/img/produtos/exitlag.png', 'icone' => 'gamepad-2', 'xp' => 300,
          'tipo' => ['area.prod.tipo.games', 'Para gamers', 'zap'],
          'texto' => 'Ofereça o <strong>ExitLag</strong> aos seus assinantes: menos lag e ping mais estável nos jogos online, como serviço de valor agregado no plano.', 'link' => null],
-        ['chave' => 'kaspersky', 'nome' => 'KASPERSKY', 'categoria' => 'tech', 'cor' => '0 152 129', 'foto' => 'assets/img/produtos/kaspersky.png', 'icone' => 'shield', 'xp' => 500, 'breve' => true,
+        // Abya Go: aprovado pela Abya (Rafael, 2026-11-11). O contrato exige o crédito "Tecnologia Abya" e proíbe falar em nome dela
+        // sem aprovação: o texto é o aprovado, sem promessa, latência, número de jogos nem editoras. Capa: o logo oficial "ABYA Go — White"
+        // do guia de marca, montado do SVG sem mudar cor, proporção nem forma, sobre o degradê radial das cores oficiais da Abya
+        // (Purple #C955FF no canto inferior esquerdo, Violet #4E26C6 no resto; Rafael, 2026-11-11). A cor do cartão é o Violet.
+        ['chave' => 'abyago', 'nome' => 'ABYA GO', 'categoria' => 'svas', 'cor' => '78 38 198', 'foto' => 'assets/img/produtos/abyago.png', 'icone' => 'gamepad-2', 'xp' => 300,
+         'tipo' => ['area.prod.tipo.nuvem', 'Jogos na nuvem', 'monitor-play'],
+         'texto' => 'Plataforma white label de jogos na nuvem: seu provedor oferece jogos por assinatura mensal com a própria marca, com catálogo de títulos e pacotes extras de conteúdo. Tecnologia Abya.', 'link' => null],
+        ['chave' => 'kaspersky', 'nome' => 'KASPERSKY', 'categoria' => 'svas', 'cor' => '0 152 129', 'foto' => 'assets/img/produtos/kaspersky.png', 'icone' => 'shield', 'xp' => 300, 'breve' => true,
          'tipo' => ['area.prod.tipo.seguranca', 'Segurança digital', 'lock'],
          'texto' => 'Ofereça o <strong>Kaspersky</strong> aos seus assinantes: proteção contra vírus, golpes e ameaças online, incluída no plano de internet.', 'link' => null],
-        ['chave' => 'socialcomics', 'nome' => 'SOCIAL COMICS', 'categoria' => 'tech', 'cor' => '234 44 70', 'foto' => 'assets/img/produtos/socialcomics.png', 'icone' => 'message-square', 'xp' => 500, 'breve' => true,
+        ['chave' => 'socialcomics', 'nome' => 'SOCIAL COMICS', 'categoria' => 'svas', 'cor' => '234 44 70', 'foto' => 'assets/img/produtos/socialcomics.png', 'icone' => 'message-square', 'xp' => 300, 'breve' => true,
          'tipo' => ['area.prod.tipo.leitura', 'Quadrinhos e leitura', 'layers'],
          'texto' => 'Ofereça o <strong>Social Comics</strong> aos seus assinantes: quadrinhos, mangás e livros ilustrados para ler no celular, como benefício do plano.', 'link' => null],
     ];
+}
+
+/*
+ * Cartão único dos SVAs (Rafael, 2026-11-11: "no lugar de termos cards de cada sva, vamos ter um único card explicando
+ * sobre nosso braço de SVAs e ao clicar nele, abre um popup contendo todos os nossos produtos e uma breve explicação deles").
+ * Só muda a apresentação: cada SVA continua em crew_area_produtos(), com o texto, o estado e o XP de sempre.
+ * Imagem: mosaico com as capas dos SVAs que já estão em assets/img/produtos/ (cada logo só reduzido, sem outra mudança).
+ * Sem selo sobre a foto: o selo cobria o logo da ExitLag, e a categoria "SVAs" já aparece logo abaixo da imagem.
+ */
+function crew_area_svas_cartao(): array {
+    return ['chave' => 'svas', 'nome' => 'SVAs', 'categoria' => 'svas', 'cor' => '31 91 255', 'foto' => 'assets/img/produtos/svas-mosaico.png',
+            'texto' => 'Serviços de valor adicionado para o seu provedor incluir nos planos e oferecer mais aos assinantes. Clique para conhecer todos.'];
 }
 
 /*

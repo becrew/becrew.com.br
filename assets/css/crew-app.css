@@ -220,7 +220,10 @@ a.app-stat:hover { border-color: var(--app-line-2); background: var(--app-surfac
 .app-xp em { font-style: normal; font-weight: 700; padding-left: .45rem; margin-left: .1rem; border-left: 1px solid rgba(0,0,0,.12); }
 
 /* Barra lateral: nível e progresso */
-.app-nivel { display: flex; flex-direction: column; gap: .5rem; padding: .75rem; border-radius: 12px; background: var(--nivel-bg); text-decoration: none; color: inherit; }
+.app-nivel { display: flex; flex-direction: column; gap: .5rem; padding: .75rem; border-radius: 12px; background: var(--nivel-bg); border: 1px solid transparent; text-decoration: none; color: inherit; }
+.app-nivel:hover { border-color: var(--app-line-2); }
+/* Na página de pontos, o bloco fica marcado como a página atual */
+.app-nivel[aria-current="page"] { border-color: var(--nivel-cor); }
 .app-nivel__topo { display: flex; align-items: center; gap: .5rem; }
 /* Insígnias dos níveis: assets/img/niveis/<nível>.png (fundo transparente) */
 .app-nivel__selo, .xp-painel__selo, .app-xp__selo { flex: none; display: block; object-fit: contain; }
@@ -234,24 +237,7 @@ a.app-stat:hover { border-color: var(--app-line-2); background: var(--app-surfac
 .app-nivel__topo > i { display: flex; }
 .app-nivel__topo > i svg { flex: none; width: 18px; height: 18px; color: var(--nivel-cor); }
 
-/* Início: faixa do nível */
-.xp-faixa {
-    display: grid; grid-template-columns: auto minmax(0, 1fr) minmax(120px, 220px) auto; align-items: center; gap: 1rem;
-    padding: 1rem 1.15rem; border-radius: var(--app-radius);
-    background: linear-gradient(90deg, var(--nivel-bg), var(--app-surface) 70%); border: 1px solid var(--app-line); box-shadow: var(--app-shadow);
-    color: inherit; text-decoration: none;
-}
-.xp-faixa > svg { width: 16px; height: 16px; color: var(--app-muted); }
-.xp-faixa:hover { border-color: var(--app-line-2); }
-.xp-faixa__info { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-.xp-faixa__titulo { font: 700 14px/1.2 var(--font-body); color: var(--app-text); }
-.xp-faixa__texto { font-size: 12px; color: var(--app-muted); }
-/* Placar desligado (etapa 1): ícone, texto e seta, sem barra */
-.xp-faixa:not(:has(.xp-faixa__barra)) { grid-template-columns: auto minmax(0, 1fr) auto; }
-.xp-faixa > i:first-child { display: flex; }
-.xp-faixa > i:first-child svg { width: 28px; height: 28px; color: var(--nivel-cor); }
-
-/* Produtos: painel dos pontos com a escada de níveis */
+/* Pontos e níveis (pontos.php): painel dos pontos com a escada de níveis */
 .xp-painel {
     display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 1.25rem 2rem;
     padding: 1.4rem; border-radius: var(--app-radius);
@@ -262,7 +248,6 @@ a.app-stat:hover { border-color: var(--app-line-2); background: var(--app-surfac
 .xp-painel__selo { width: 44px; height: 44px; }
 .xp-painel__icone { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: var(--nivel-bg); color: var(--nivel-cor); }
 .xp-painel__icone svg { width: 24px; height: 24px; }
-.xp-faixa .xp-painel__selo { width: 30px; height: 30px; }
 .xp-painel__info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: .5rem; }
 .xp-painel__kicker { font: 600 11px/1 var(--font-body); letter-spacing: .1em; text-transform: uppercase; color: var(--nivel-cor); }
 .xp-painel__titulo { margin: 0; padding: 0; border: 0; font: 700 1.1rem/1.2 var(--font-body); color: var(--app-text); display: flex; align-items: baseline; flex-wrap: wrap; gap: .35rem .6rem; }
@@ -306,7 +291,5 @@ a.app-stat:hover { border-color: var(--app-line-2); background: var(--app-surfac
 }
 @media (max-width: 560px) {
     .app-xp em, .app-xp > span { display: none; }
-    .xp-faixa { grid-template-columns: auto minmax(0, 1fr) auto; }
-    .xp-faixa__barra { grid-column: 1 / -1; grid-row: 2; }
     .xp-niveis { grid-template-columns: 1fr; }
 }

@@ -12,7 +12,7 @@ Site estático (HTML, CSS e JavaScript), com alguns scripts PHP para formulário
 | `blog/` | Posts do blog |
 | `marketing-para-provedores-de-internet/` | Landing page do Raio X da Operação |
 | `area-do-cliente.html` | Login da área do cliente |
-| `painel.php` (Início), `entregas.php`, `plataformas.php` | Páginas da área do cliente (exigem login; o menu e o topo ficam em `assets/php/area/layout.php`) |
+| `painel.php` (Início), `entregas.php`, `produtos.php` (Serviços, Games e SVAs), `plataformas.php` (Side Quest), `pontos.php` (pontos e níveis) | Páginas da área do cliente (exigem login; o menu e o topo ficam em `assets/php/area/layout.php`) |
 | `assets/php/area/` | Ponte da área do cliente: `api.php` fala com a Plataforma da .crew; `plataforma.php` e `layout.php` são includes (bloqueados pelo `.htaccess`, só `api.php` responde) |
 | `docs/` | Planos e desenhos (não vão para o servidor) |
 | `assets/css`, `assets/js`, `assets/img` | Estilos, scripts e imagens |
@@ -27,7 +27,7 @@ A `main` é protegida: toda mudança entra por Pull Request e precisa de aprova�
 
 ## Área do cliente: integração com a Plataforma
 
-O site é só a vitrine: nenhuma entrega nem decisão é guardada aqui. Cada login pertence a **uma empresa** (`'empresa' => 'EMP-0000'` no `users.php`) e vê as entregas de todas as frentes em que ela é cliente. Quem não tem `empresa` vê só "Plataformas".
+O site é só a vitrine: nenhuma entrega nem decisão é guardada aqui. Cada login pertence a **uma empresa** (`'empresa' => 'EMP-0000'` no `users.php`) e vê as entregas de todas as frentes em que ela é cliente. Quem não tem `empresa` vê só "Produtos", "Plataformas" e "Pontos e níveis".
 
 - O navegador fala só com `assets/php/area/api.php` (`GET ?acao=entregas`, `POST ?acao=decidir`). A ponte lê a empresa **da sessão**, nunca do navegador, e chama `crm.becrew.com.br` com um token que fica fora do `public_html`.
 - Escrita só por POST, com `X-Requested-With: fetch` e `Origin` igual ao do site. Limite de 60 leituras e 20 decisões por minuto, por usuário logado (hash do e-mail) e por IP.

@@ -15,7 +15,7 @@ trap cleanup EXIT
 
 check() { total=$((total+1)); if [ "$2" != "$3" ]; then fails=$((fails+1)); echo "FALHOU: $1 (esperado '$3', veio '$2')"; fi; }
 
-cp -R "$ROOT/assets" "$ROOT/.htaccess" "$ROOT/painel.php" "$ROOT/entregas.php" "$ROOT/plataformas.php" "$TMP/" 2>/dev/null
+cp -R "$ROOT/assets" "$ROOT/.htaccess" "$ROOT/painel.php" "$ROOT/entregas.php" "$ROOT/plataformas.php" "$ROOT/produtos.php" "$ROOT/pontos.php" "$TMP/" 2>/dev/null
 HASH="$(php -r 'echo password_hash("senha-certa", PASSWORD_BCRYPT);')"
 cat > "$TMP/assets/php/users.php" <<PHP
 <?php return [
@@ -90,7 +90,7 @@ for u in teste a b c; do entrar "$u"; done
 mock_reset
 
 # --- páginas sem login vão ao login; a ponte sem login dá 401 ---
-for pg in painel.php entregas.php plataformas.php; do
+for pg in painel.php entregas.php plataformas.php produtos.php pontos.php; do
   check "area: $pg sem login → 303 para o login" "$(curl -s -o /dev/null -w '%{http_code} %{redirect_url}' "http://127.0.0.1:$PORT/$pg")" "303 http://127.0.0.1:$PORT/area-do-cliente.html"
 done
 check "area: ponte sem login → 401" "$(code -H 'X-Requested-With: fetch' "$A?acao=entregas")" "401"
@@ -192,8 +192,8 @@ check "area: com o arquivo de volta, a ponte volta a funcionar" "$(code_as a "$A
 # --- páginas com login: o menu depende da empresa ---
 pa="$(get_as a "http://127.0.0.1:$PORT/entregas.php")"
 check "pagina: entregas.php de quem tem empresa abre (200)" "$(code_as a "http://127.0.0.1:$PORT/entregas.php")" "200"
-check "pagina: o menu de quem tem empresa tem Entregas e Plataformas" "$(echo "$pa" | grep -c -e 'href="entregas.php"' -e 'href="plataformas.php"')" "2"
-check "pagina: Relatórios e Produtos aparecem como 'em breve', sem link" "$(echo "$pa" | grep -c -e 'relatorios.php' -e 'produtos.php')$(echo "$pa" | grep -o 'data-i18n="area.nav.soon">em breve' | wc -l | tr -d ' ')" "02"
+check "pagina: o menu de quem tem empresa tem Entregas, Produtos e Plataformas" "$(echo "$pa" | grep -c -e 'href="entregas.php"' -e 'href="produtos.php"' -e 'href="plataformas.php"')" "3"
+check "pagina: só Relatórios aparece como 'em breve', sem link" "$(echo "$pa" | grep -c -e 'relatorios.php')$(echo "$pa" | grep -o 'data-i18n="area.nav.soon">em breve' | wc -l | tr -d ' ')" "01"
 check "pagina: o menu tem Sair (logout)" "$(echo "$pa" | grep -c 'assets/php/logout.php')" "1"
 check "pagina: painel.php (Início) abre para quem tem empresa" "$(code_as a "http://127.0.0.1:$PORT/painel.php")" "200"
 check "pagina: o token não aparece em nenhuma página" "$(echo "$pa" "$(get_as a "http://127.0.0.1:$PORT/painel.php")" | grep -c "$TOKEN")" "0"
@@ -202,7 +202,12 @@ check "pagina: sem empresa, plataformas.php abre" "$(code_as teste "http://127.0
 check "pagina: sem empresa, o menu não tem Entregas" "$(echo "$pt" | grep -c 'href="entregas.php"')" "0"
 check "pagina: sem empresa, painel.php vai para plataformas.php" "$(curl -s -o /dev/null -w '%{http_code} %{redirect_url}' -b "$TMP/jar-teste" "http://127.0.0.1:$PORT/painel.php")" "303 http://127.0.0.1:$PORT/plataformas.php"
 check "pagina: sem empresa, entregas.php vai para plataformas.php" "$(curl -s -o /dev/null -w '%{http_code} %{redirect_url}' -b "$TMP/jar-teste" "http://127.0.0.1:$PORT/entregas.php")" "303 http://127.0.0.1:$PORT/plataformas.php"
-check "pagina: as plataformas mostram o Gaming e escondem o Ruller (em desenvolvimento)" "$(echo "$pt" | grep -c 'GAMING.CREW' | tr -d ' ' | sed 's/^[1-9][0-9]*$/sim/')-$(echo "$pt" | grep -c 'RULLER.CREW' | tr -d ' ')" "sim-0"
+check "pagina: sem empresa, o menu tem Produtos e Plataformas" "$(echo "$pt" | grep -c -e 'app-nav__link" href="produtos.php"' -e 'app-nav__link" href="plataformas.php"')" "2"
+check "pagina: Plataformas mostra só o Side Quest" "$(echo "$pt" | grep -c 'SIDE QUEST' | tr -d ' ' | sed 's/^[1-9][0-9]*$/sim/')-$(echo "$pt" | grep -c -e 'EXITLAG' -e 'RULLER.CREW' | tr -d ' ')" "sim-0"
+pp="$(get_as teste "http://127.0.0.1:$PORT/produtos.php")"
+check "pagina: sem empresa, produtos.php abre" "$(code_as teste "http://127.0.0.1:$PORT/produtos.php")" "200"
+check "pagina: pontos.php abre com e sem empresa" "$(code_as a "http://127.0.0.1:$PORT/pontos.php") $(code_as teste "http://127.0.0.1:$PORT/pontos.php")" "200 200"
+check "pagina: Produtos mostra o catálogo e esconde o Ruller (em desenvolvimento)" "$(echo "$pp" | grep -c 'EXITLAG' | tr -d ' ' | sed 's/^[1-9][0-9]*$/sim/')-$(echo "$pp" | grep -c 'RULLER.CREW' | tr -d ' ')" "sim-0"
 
 # --- limite de uso: por usuário logado e por IP (o IP real atrás da CDN ainda não foi confirmado) ---
 rm -f "$TMP"/assets/php/data/rl-area*.json
