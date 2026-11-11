@@ -119,7 +119,7 @@ crew_area_abrir('produtos', $perfil, ['assets/css/crew-entregas.css', 'assets/cs
 <div class="prod-dialogo__topo">
 <div>
 <span class="prod-card__cat" data-i18n="area.prod.cat.svas"><?= $categorias['svas'][0] ?></span>
-<h2 class="prod-dialogo__titulo" id="svas-dialogo-titulo" data-i18n="area.prod.svas.titulo">SVAs da Crew</h2>
+<h2 class="prod-dialogo__titulo" id="svas-dialogo-titulo" data-i18n="area.prod.svas.titulo">SVAs</h2>
 <p class="prod-dialogo__intro" data-i18n="area.prod.svas.intro">Serviços de valor adicionado para o seu provedor incluir nos planos e oferecer mais aos assinantes.</p>
 </div>
 <button type="button" class="prod-dialogo__fechar" data-dialogo-fechar aria-label="Fechar" data-i18n-attr="aria-label:area.prod.fechar"><i data-lucide="x"></i></button>

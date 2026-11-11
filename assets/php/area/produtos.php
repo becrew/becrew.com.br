@@ -98,7 +98,7 @@ function crew_area_produtos(): array {
  * Sem selo sobre a foto: o selo cobria o logo da ExitLag, e a categoria "SVAs" já aparece logo abaixo da imagem.
  */
 function crew_area_svas_cartao(): array {
-    return ['chave' => 'svas', 'nome' => 'SVAs DA CREW', 'categoria' => 'svas', 'cor' => '31 91 255', 'foto' => 'assets/img/produtos/svas-mosaico.png',
+    return ['chave' => 'svas', 'nome' => 'SVAs', 'categoria' => 'svas', 'cor' => '31 91 255', 'foto' => 'assets/img/produtos/svas-mosaico.png',
             'texto' => 'Serviços de valor adicionado para o seu provedor incluir nos planos e oferecer mais aos assinantes. Clique para conhecer todos.'];
 }
 

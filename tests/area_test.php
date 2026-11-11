@@ -254,6 +254,7 @@ $arqAbya = "$raiz/assets/img/produtos/abyago.png";
 check('imagem do Abya Go: Purple no canto inferior esquerdo', $perto($corPx($arqAbya, 2, 597), [201, 85, 255], 12));
 check('imagem do Abya Go: Violet no canto superior direito', $perto($corPx($arqAbya, 797, 2), [78, 38, 198], 12));
 check('imagem do Abya Go: sem o fundo escuro de antes', !$perto($corPx($arqAbya, 400, 50), [20, 19, 22], 30));
+check('inglês: cartão e popup chamados só de SVAs', strpos($en, "'painel.svas.title': 'SVAs'") !== false && strpos($en, "'area.prod.svas.titulo': 'SVAs'") !== false && stripos($en, 'Crew VAS') === false);
 check('inglês: Time de E-Sports explica o produto', strpos($en, "Create your ISP\\'s own e-sports team to compete in tournaments and make your presence felt in the gaming community.") !== false);
 check('produtos: nenhum tem link de acesso (o Side Quest é plataforma)', count(array_filter(array_column(crew_area_produtos(), 'link'))) === 0);
 $situacao = ['CONSULTORIA' => 'contratar', 'MARKETING' => 'contratar', 'TIME DE E-SPORTS' => 'contratar', 'HUB IPC' => 'contratar'];
@@ -290,7 +291,10 @@ foreach (['Produtos', 'Produtos sem empresa'] as $nome) {
     // SVAs: a aba tem um cartão só, que abre o popup com os quatro (Rafael, 2026-11-11).
     check("tela $nome: aba SVAs com um cartão só", preg_match('/data-prod-cat="svas"[^>]*>(?:(?!<\/button>).)*<b>1<\/b>/s', $h) === 1 && substr_count($h, 'data-cat="svas"') === 1);
     $cartaoSva = preg_match('/<article class="prod-card is-grupo"[^>]*data-cat="svas"(?:(?!<\/article>).)*<\/article>/s', $h, $mC) ? $mC[0] : '';
-    check("tela $nome: cartão SVAs DA CREW explica o braço de SVAs", strpos($cartaoSva, '>SVAs DA CREW</h2>') !== false && strpos($cartaoSva, 'Serviços de valor adicionado para o seu provedor incluir nos planos e oferecer mais aos assinantes.') !== false);
+    // Nome só "SVAs" (Rafael, 2026-11-11: "Chame apenas de SVAs"), no cartão e no título do popup.
+    check("tela $nome: sem o nome antigo SVAs DA CREW", stripos($h, 'SVAs DA CREW') === false && stripos($h, 'SVAs da Crew') === false);
+    check("tela $nome: popup com o título SVAs", preg_match('/<h2 class="prod-dialogo__titulo" id="svas-dialogo-titulo"[^>]*>SVAs<\/h2>/', $h) === 1);
+    check("tela $nome: cartão SVAs explica o braço de SVAs", strpos($cartaoSva, '>SVAs</h2>') !== false && strpos($cartaoSva, 'Serviços de valor adicionado para o seu provedor incluir nos planos e oferecer mais aos assinantes.') !== false);
     // O selo sobre a foto cobria o logo da ExitLag no mosaico; o cartão dos SVAs fica sem selo (Rafael, 2026-11-11).
     check("tela $nome: cartão dos SVAs sem selo sobre o mosaico", $cartaoSva !== '' && strpos($cartaoSva, 'prod-card__tipo') === false && strpos($cartaoSva, 'Valor adicionado') === false);
     check("tela $nome: cartão dos SVAs abre o popup", strpos($cartaoSva, 'data-dialogo-abrir="svas-dialogo"') !== false);
