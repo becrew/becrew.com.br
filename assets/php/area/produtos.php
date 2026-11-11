@@ -64,7 +64,7 @@ function crew_area_produtos(): array {
         // dashboard/produtos; Rafael, 2026-11-11). A foto é a do Side Quest (public/headers/topo-playbook.png), em WebP.
         ['chave' => 'timeesports', 'nome' => 'TIME DE E-SPORTS', 'categoria' => 'games', 'cor' => '240 52 52', 'foto' => 'assets/img/time-esports.webp', 'xp' => 1000,
          'tipo' => ['area.prod.tipo.esports', 'E-sports', 'gamepad-2'],
-         'texto' => 'Patrocínio, presença em campeonatos e conteúdo com os jogadores.', 'link' => null],
+         'texto' => 'Crie a equipe de e-sports do seu provedor para competir em campeonatos e marcar presença na comunidade gamer. Patrocínio, presença em campeonatos e conteúdo com os jogadores.', 'link' => null],
         // Hub IPC: comparador de planos gamer (gaminghub.com.br), com o chamado para o provedor fazer parte e "Quero contratar" (Rafael, 2026-11-11).
         ['chave' => 'hubipc', 'nome' => 'HUB IPC', 'categoria' => 'games', 'cor' => '240 52 52', 'foto' => 'assets/img/post-gamers-streamer.webp', 'xp' => 1000,
          'tipo' => ['area.prod.tipo.games', 'Para gamers', 'zap'],

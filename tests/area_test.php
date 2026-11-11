@@ -254,6 +254,7 @@ $arqAbya = "$raiz/assets/img/produtos/abyago.png";
 check('imagem do Abya Go: Purple no canto inferior esquerdo', $perto($corPx($arqAbya, 2, 597), [201, 85, 255], 12));
 check('imagem do Abya Go: Violet no canto superior direito', $perto($corPx($arqAbya, 797, 2), [78, 38, 198], 12));
 check('imagem do Abya Go: sem o fundo escuro de antes', !$perto($corPx($arqAbya, 400, 50), [20, 19, 22], 30));
+check('inglês: Time de E-Sports explica o produto', strpos($en, "Create your ISP\\'s own e-sports team to compete in tournaments and make your presence felt in the gaming community.") !== false);
 check('produtos: nenhum tem link de acesso (o Side Quest é plataforma)', count(array_filter(array_column(crew_area_produtos(), 'link'))) === 0);
 $situacao = ['CONSULTORIA' => 'contratar', 'MARKETING' => 'contratar', 'TIME DE E-SPORTS' => 'contratar', 'HUB IPC' => 'contratar', 'EXITLAG' => 'contratar', 'ABYA GO' => 'contratar', 'KASPERSKY' => 'breve', 'SOCIAL COMICS' => 'breve'];
 foreach (['Produtos', 'Produtos sem empresa'] as $nome) {
@@ -267,6 +268,8 @@ foreach (['Produtos', 'Produtos sem empresa'] as $nome) {
     // Games: o "IPC" virou o Time de E-Sports, igual ao Side Quest (Rafael, 2026-11-11; src/lib/products.ts e dashboard/produtos do Side Quest).
     check("tela $nome: sem o cartão IPC", strpos($h, '>IPC</h2>') === false && strpos($h, 'IP Champions') === false);
     check("tela $nome: Time de E-Sports com o texto do Side Quest", strpos($h, 'Patrocínio, presença em campeonatos e conteúdo com os jogadores.') !== false);
+    // Mais explicativo (Rafael, 2026-11-11: "Crie sua propria equipe para competir e marcar presença na comunidade gamer").
+    check("tela $nome: Time de E-Sports explica o produto", strpos($h, 'Crie a equipe de e-sports do seu provedor para competir em campeonatos e marcar presença na comunidade gamer.') !== false);
     // Hub IPC: comparador de planos gamer, com o chamado para o provedor fazer parte e o botão "Quero contratar" (Rafael, 2026-11-11).
     check("tela $nome: Hub IPC explica o comparador de planos gamer", strpos($h, 'comparador de planos de internet gamer') !== false);
     check("tela $nome: Hub IPC chama o provedor para fazer parte", strpos($h, 'Coloque os planos gamer do seu provedor no Hub IPC e faça parte.') !== false);

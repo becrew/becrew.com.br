@@ -73,7 +73,7 @@ window.CREW_I18N = Object.assign(window.CREW_I18N || {}, {
   'painel.abyago.title': 'ABYA GO',
   'painel.abyago.text': 'White-label cloud gaming platform: your ISP offers games on a monthly subscription under its own brand, with a catalog of titles and extra content packs. Abya technology.',
   'painel.timeesports.title': 'E-SPORTS TEAM',
-  'painel.timeesports.text': 'Sponsorship, presence in tournaments and content with the players.',
+  'painel.timeesports.text': 'Create your ISP\'s own e-sports team to compete in tournaments and make your presence felt in the gaming community. Sponsorship, presence in tournaments and content with the players.',
   'painel.hubipc.title': 'HUB IPC',
   'painel.hubipc.text': '<strong>Hub IPC</strong> is a comparison site for gaming internet plans: players search and compare plans made for gaming. Put your provider\'s gaming plans on Hub IPC and be part of it.',
   'painel.exitlag.title': 'EXITLAG',
